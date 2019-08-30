@@ -17,6 +17,32 @@ type request struct {
   Params []interface{} `json:"params"`
 }
 
+// DNSName type alias to string so UnmarshalJSON can decode it properly.
+// The string for this name is hardcoded in ./convert.go as well.
+type DNSName string
+
+func (out *DNSName) UnmarshalJSON(data []byte) error {
+  var in interface{}
+  if e := json.Unmarshal(data, &in); e != nil {
+    return e
+  }
+
+  switch v := in.(type) {
+    case string:
+      *out = DNSName(v)
+    case map[string]interface{}:
+      var ok bool
+      var tout string
+      tout, ok = v["__dns_name__"].(string)
+      if !ok {
+        return fmt.Errorf("DNSName could not be unmarshalled from string type.")
+      }
+      *out = DNSName(tout)
+  }
+
+  return nil
+}
+
 {{range .Schema.Commands}}
 /*
 {{TrimSpace .Doc}}
@@ -122,6 +148,7 @@ func (t *{{.UpperName}}Result) String() string {
   }
   return fmt.Sprintf("{{.UpperName}}Result%v", string(b))
 }
+
 {{end}}
 
 {{range .Schema.Classes}}
@@ -163,12 +190,14 @@ func (out *{{.UpperName}}) UnmarshalJSON(data []byte) error {
     raw := in.{{.UpperName}}
     {{if eq "DNSName" .Type}}
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
@@ -211,15 +240,17 @@ func (out *{{.UpperName}}) UnmarshalJSON(data []byte) error {
             break
         }
         {{else if eq "DNSName" .Type}}
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }

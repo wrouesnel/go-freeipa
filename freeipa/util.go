@@ -14,3 +14,9 @@ func Int(v int) *int {
 func Bool(v bool) *bool {
 	return &v
 }
+
+// DNSNameOptional is a helper to fill *DNSNAme fields in request options.
+func DNSNameOptional(v string) *DNSName {
+	r := DNSName(v)
+	return &r
+}
