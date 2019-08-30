@@ -161,7 +161,34 @@ func (out *{{.UpperName}}) UnmarshalJSON(data []byte) error {
   {{range .Params}}
   if {{if .Required}}true{{else}}in.{{.UpperName}} != nil{{end}} {
     raw := in.{{.UpperName}}
+    {{if eq "DNSName" .Type}}
+    plainOk := false
+    var plainV string
+    switch tempV := raw.(type) {
+      case string:
+        plainV = tempV
+      case map[string]string:
+        plainV, plainOk = tempV["__dns_name__"]
+      default:
+        break
+    }
+    {{else if eq "bool" (ToGoType .Type)}}
+    plainOk := false
+    var plainV bool
+    switch tempV := raw.(type) {
+      case bool:
+        plainV = tempV
+        plainOk = true
+      case string:
+        var tempErr error
+        plainV, tempErr = strconv.ParseBool(tempV)
+        plainOk = tempErr == nil
+      default:
+        break
+    }
+    {{else}}
     plainV, plainOk := raw.({{ToGoType .Type}})
+    {{end}}
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
     var sliceV []{{ToGoType .Type}}
     sliceOk := sliceWrapperOk
@@ -169,6 +196,33 @@ func (out *{{.UpperName}}) UnmarshalJSON(data []byte) error {
       for _, rawItem := range sliceWrapperV {
         {{if eq "int" (ToGoType .Type)}}
         itemV, itemOk := rawItem.(string)
+        {{else if eq "bool" (ToGoType .Type)}}
+        itemOk := false
+        var itemV bool
+        switch tempV := rawItem.(type) {
+          case bool:
+            itemV = tempV
+            itemOk = true
+          case string:
+            var tempErr error
+            itemV, tempErr = strconv.ParseBool(tempV)
+            itemOk = tempErr == nil
+          default:
+            break
+        }
+        {{else if eq "DNSName" .Type}}
+        var itemV string
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV = tempItemV
+            itemOk = true
+          case map[string]interface{}:
+            itemV, itemOk = tempItemV["__dns_name__"].(string)
+          default:
+            break
+        }
         {{else}}
         itemV, itemOk := rawItem.({{ToGoType .Type}})
         {{end}}
@@ -188,37 +242,37 @@ func (out *{{.UpperName}}) UnmarshalJSON(data []byte) error {
       }
     }
     {{if .Multivalue}}
-      if plainOk {
-        out.{{.UpperName}} = {{if not .Required}}&{{end}}[]{{ToGoType .Type}}{plainV}
-      } else if sliceOk {
-        {{if .Required}}
-          if len(sliceV) < 1 {
-            return fmt.Errorf("unexpected value for field {{.UpperName}}: %v; expected at least one element", raw)
-          }
-        {{end}}
-        out.{{.UpperName}} = {{if not .Required}}&{{end}}sliceV
-      } else {
-        return fmt.Errorf("unexpected value for field {{.UpperName}}: %v (%v)", raw, reflect.TypeOf(raw))
-      }
+    if plainOk {
+      out.{{.UpperName}} = {{if not .Required}}&{{end}}[]{{ToGoType .Type}}{plainV}
+    } else if sliceOk {
+      {{if .Required}}
+        if len(sliceV) < 1 {
+          return fmt.Errorf("unexpected value for field {{.UpperName}}: %v; expected at least one element", raw)
+        }
+      {{end}}
+      out.{{.UpperName}} = {{if not .Required}}&{{end}}sliceV
+    } else {
+      return fmt.Errorf("unexpected value for field {{.UpperName}}: %v (%v)", raw, reflect.TypeOf(raw))
+    }
     {{else}}
-      if plainOk {
-        out.{{.UpperName}} = {{if not .Required}}&{{end}}plainV
-      } else if sliceOk {
-        {{if .Required}}
-          if len(sliceV) != 1 {
-            return fmt.Errorf("unexpected value for field {{.UpperName}}: %v; expected exactly one element", raw)
-          }
-          out.{{.UpperName}} = sliceV[0]
-        {{else}}
-          if len(sliceV) == 1 {
-            out.{{.UpperName}} = &sliceV[0]
-          } else if len(sliceV) > 1 {
-            return fmt.Errorf("unexpected value for field {{.UpperName}}: %v; expected at most one element", raw)
-          }
-        {{end}}
-      } else {
-        return fmt.Errorf("unexpected value for field {{.UpperName}}: %v (%v)", raw, reflect.TypeOf(raw))
-      }
+    if plainOk {
+      out.{{.UpperName}} = {{if not .Required}}&{{end}}plainV
+    } else if sliceOk {
+      {{if .Required}}
+        if len(sliceV) != 1 {
+          return fmt.Errorf("unexpected value for field {{.UpperName}}: %v; expected exactly one element", raw)
+        }
+        out.{{.UpperName}} = sliceV[0]
+      {{else}}
+        if len(sliceV) == 1 {
+          out.{{.UpperName}} = &sliceV[0]
+        } else if len(sliceV) > 1 {
+          return fmt.Errorf("unexpected value for field {{.UpperName}}: %v; expected at most one element", raw)
+        }
+      {{end}}
+    } else {
+      return fmt.Errorf("unexpected value for field {{.UpperName}}: %v (%v)", raw, reflect.TypeOf(raw))
+    }
     {{end}}
   }
   {{end -}}
