@@ -17,6 +17,32 @@ type request struct {
   Params []interface{} `json:"params"`
 }
 
+// DNSName type alias to string so UnmarshalJSON can decode it properly.
+// The string for this name is hardcoded in ./convert.go as well.
+type DNSName string
+
+func (out *DNSName) UnmarshalJSON(data []byte) error {
+  var in interface{}
+  if e := json.Unmarshal(data, &in); e != nil {
+    return e
+  }
+
+  switch v := in.(type) {
+    case string:
+      *out = DNSName(v)
+    case map[string]interface{}:
+      var ok bool
+      var tout string
+      tout, ok = v["__dns_name__"].(string)
+      if !ok {
+        return fmt.Errorf("DNSName could not be unmarshalled from string type.")
+      }
+      *out = DNSName(tout)
+  }
+
+  return nil
+}
+
 
 /*
 Create new ACI.
@@ -201,6 +227,7 @@ func (t *AciAddResult) String() string {
   return fmt.Sprintf("AciAddResult%v", string(b))
 }
 
+
 /*
 Delete ACI.
 */
@@ -305,6 +332,7 @@ func (t *AciDelResult) String() string {
   }
   return fmt.Sprintf("AciDelResult%v", string(b))
 }
+
 
 /*
 Search for ACIs.
@@ -512,6 +540,7 @@ func (t *AciFindResult) String() string {
   return fmt.Sprintf("AciFindResult%v", string(b))
 }
 
+
 /*
 Modify ACI.
 */
@@ -688,6 +717,7 @@ func (t *AciModResult) String() string {
   }
   return fmt.Sprintf("AciModResult%v", string(b))
 }
+
 
 /*
 Rename an ACI.
@@ -872,6 +902,7 @@ func (t *AciRenameResult) String() string {
   return fmt.Sprintf("AciRenameResult%v", string(b))
 }
 
+
 /*
 Display a single ACI given an ACI name.
 */
@@ -995,6 +1026,7 @@ func (t *AciShowResult) String() string {
   return fmt.Sprintf("AciShowResult%v", string(b))
 }
 
+
 /*
 Determine whether ipa-adtrust-install has been run on this system
 */
@@ -1075,6 +1107,7 @@ func (t *AdtrustIsEnabledResult) String() string {
   }
   return fmt.Sprintf("AdtrustIsEnabledResult%v", string(b))
 }
+
 
 /*
 Add an automember rule.
@@ -1212,6 +1245,7 @@ func (t *AutomemberAddResult) String() string {
   }
   return fmt.Sprintf("AutomemberAddResult%v", string(b))
 }
+
 
 /*
 Add conditions to an automember rule.
@@ -1366,6 +1400,7 @@ func (t *AutomemberAddConditionResult) String() string {
   return fmt.Sprintf("AutomemberAddConditionResult%v", string(b))
 }
 
+
 /*
 Remove default (fallback) group for all unmatched entries.
 */
@@ -1482,6 +1517,7 @@ func (t *AutomemberDefaultGroupRemoveResult) String() string {
   }
   return fmt.Sprintf("AutomemberDefaultGroupRemoveResult%v", string(b))
 }
+
 
 /*
 Set default (fallback) group for all unmatched entries.
@@ -1606,6 +1642,7 @@ func (t *AutomemberDefaultGroupSetResult) String() string {
   return fmt.Sprintf("AutomemberDefaultGroupSetResult%v", string(b))
 }
 
+
 /*
 Display information about the default (fallback) automember groups.
 */
@@ -1717,6 +1754,7 @@ func (t *AutomemberDefaultGroupShowResult) String() string {
   return fmt.Sprintf("AutomemberDefaultGroupShowResult%v", string(b))
 }
 
+
 /*
 Delete an automember rule.
 */
@@ -1821,6 +1859,7 @@ func (t *AutomemberDelResult) String() string {
   }
   return fmt.Sprintf("AutomemberDelResult%v", string(b))
 }
+
 
 /*
 Search for automember rules.
@@ -1951,6 +1990,7 @@ func (t *AutomemberFindResult) String() string {
   }
   return fmt.Sprintf("AutomemberFindResult%v", string(b))
 }
+
 
 /*
 Modify an automember rule.
@@ -2102,6 +2142,7 @@ func (t *AutomemberModResult) String() string {
   return fmt.Sprintf("AutomemberModResult%v", string(b))
 }
 
+
 /*
 Rebuild auto membership.
 */
@@ -2230,6 +2271,7 @@ func (t *AutomemberRebuildResult) String() string {
   }
   return fmt.Sprintf("AutomemberRebuildResult%v", string(b))
 }
+
 
 /*
 Remove conditions from an automember rule.
@@ -2384,6 +2426,7 @@ func (t *AutomemberRemoveConditionResult) String() string {
   return fmt.Sprintf("AutomemberRemoveConditionResult%v", string(b))
 }
 
+
 /*
 Display information about an automember rule.
 */
@@ -2500,6 +2543,7 @@ func (t *AutomemberShowResult) String() string {
   }
   return fmt.Sprintf("AutomemberShowResult%v", string(b))
 }
+
 
 /*
 Create a new automount key.
@@ -2644,6 +2688,7 @@ func (t *AutomountkeyAddResult) String() string {
   return fmt.Sprintf("AutomountkeyAddResult%v", string(b))
 }
 
+
 /*
 Delete an automount key.
 */
@@ -2766,6 +2811,7 @@ func (t *AutomountkeyDelResult) String() string {
   }
   return fmt.Sprintf("AutomountkeyDelResult%v", string(b))
 }
+
 
 /*
 Search for an automount key.
@@ -2914,6 +2960,7 @@ func (t *AutomountkeyFindResult) String() string {
   }
   return fmt.Sprintf("AutomountkeyFindResult%v", string(b))
 }
+
 
 /*
 Modify an automount key.
@@ -3083,6 +3130,7 @@ func (t *AutomountkeyModResult) String() string {
   return fmt.Sprintf("AutomountkeyModResult%v", string(b))
 }
 
+
 /*
 Display an automount key.
 */
@@ -3218,6 +3266,7 @@ func (t *AutomountkeyShowResult) String() string {
   return fmt.Sprintf("AutomountkeyShowResult%v", string(b))
 }
 
+
 /*
 Create a new automount location.
 */
@@ -3343,6 +3392,7 @@ func (t *AutomountlocationAddResult) String() string {
   return fmt.Sprintf("AutomountlocationAddResult%v", string(b))
 }
 
+
 /*
 Delete an automount location.
 */
@@ -3447,6 +3497,7 @@ func (t *AutomountlocationDelResult) String() string {
   }
   return fmt.Sprintf("AutomountlocationDelResult%v", string(b))
 }
+
 
 /*
 Search for an automount location.
@@ -3584,6 +3635,7 @@ func (t *AutomountlocationFindResult) String() string {
   return fmt.Sprintf("AutomountlocationFindResult%v", string(b))
 }
 
+
 /*
 Display an automount location.
 */
@@ -3701,6 +3753,7 @@ func (t *AutomountlocationShowResult) String() string {
   return fmt.Sprintf("AutomountlocationShowResult%v", string(b))
 }
 
+
 /*
 Generate automount files for a specific location.
 */
@@ -3787,6 +3840,7 @@ func (t *AutomountlocationTofilesResult) String() string {
   }
   return fmt.Sprintf("AutomountlocationTofilesResult%v", string(b))
 }
+
 
 /*
 Create a new automount map.
@@ -3924,6 +3978,7 @@ func (t *AutomountmapAddResult) String() string {
   }
   return fmt.Sprintf("AutomountmapAddResult%v", string(b))
 }
+
 
 /*
 Create a new indirect mount point.
@@ -4074,6 +4129,7 @@ func (t *AutomountmapAddIndirectResult) String() string {
   return fmt.Sprintf("AutomountmapAddIndirectResult%v", string(b))
 }
 
+
 /*
 Delete an automount map.
 */
@@ -4184,6 +4240,7 @@ func (t *AutomountmapDelResult) String() string {
   }
   return fmt.Sprintf("AutomountmapDelResult%v", string(b))
 }
+
 
 /*
 Search for an automount map.
@@ -4332,6 +4389,7 @@ func (t *AutomountmapFindResult) String() string {
   }
   return fmt.Sprintf("AutomountmapFindResult%v", string(b))
 }
+
 
 /*
 Modify an automount map.
@@ -4483,6 +4541,7 @@ func (t *AutomountmapModResult) String() string {
   return fmt.Sprintf("AutomountmapModResult%v", string(b))
 }
 
+
 /*
 Display an automount map.
 */
@@ -4605,6 +4664,7 @@ func (t *AutomountmapShowResult) String() string {
   }
   return fmt.Sprintf("AutomountmapShowResult%v", string(b))
 }
+
 
 /*
 Create a CA.
@@ -4743,6 +4803,7 @@ func (t *CaAddResult) String() string {
   return fmt.Sprintf("CaAddResult%v", string(b))
 }
 
+
 /*
 Delete a CA.
 */
@@ -4848,6 +4909,7 @@ func (t *CaDelResult) String() string {
   return fmt.Sprintf("CaDelResult%v", string(b))
 }
 
+
 /*
 Disable a CA.
 */
@@ -4947,6 +5009,7 @@ func (t *CaDisableResult) String() string {
   return fmt.Sprintf("CaDisableResult%v", string(b))
 }
 
+
 /*
 Enable a CA.
 */
@@ -5045,6 +5108,7 @@ func (t *CaEnableResult) String() string {
   }
   return fmt.Sprintf("CaEnableResult%v", string(b))
 }
+
 
 /*
 Search for CAs.
@@ -5206,6 +5270,7 @@ func (t *CaFindResult) String() string {
   return fmt.Sprintf("CaFindResult%v", string(b))
 }
 
+
 /*
 Checks if any of the servers has the CA service enabled.
 */
@@ -5298,6 +5363,7 @@ func (t *CaIsEnabledResult) String() string {
   }
   return fmt.Sprintf("CaIsEnabledResult%v", string(b))
 }
+
 
 /*
 Modify CA configuration.
@@ -5449,6 +5515,7 @@ func (t *CaModResult) String() string {
   return fmt.Sprintf("CaModResult%v", string(b))
 }
 
+
 /*
 Display the properties of a CA.
 */
@@ -5565,6 +5632,7 @@ func (t *CaShowResult) String() string {
   }
   return fmt.Sprintf("CaShowResult%v", string(b))
 }
+
 
 /*
 Create a new CA ACL.
@@ -5739,6 +5807,7 @@ func (t *CaaclAddResult) String() string {
   return fmt.Sprintf("CaaclAddResult%v", string(b))
 }
 
+
 /*
 Add CAs to a CA ACL.
 */
@@ -5861,6 +5930,7 @@ func (t *CaaclAddCaResult) String() string {
   }
   return fmt.Sprintf("CaaclAddCaResult%v", string(b))
 }
+
 
 /*
 Add target hosts and hostgroups to a CA ACL.
@@ -5991,6 +6061,7 @@ func (t *CaaclAddHostResult) String() string {
   return fmt.Sprintf("CaaclAddHostResult%v", string(b))
 }
 
+
 /*
 Add profiles to a CA ACL.
 */
@@ -6114,6 +6185,7 @@ func (t *CaaclAddProfileResult) String() string {
   return fmt.Sprintf("CaaclAddProfileResult%v", string(b))
 }
 
+
 /*
 Add services to a CA ACL.
 */
@@ -6236,6 +6308,7 @@ func (t *CaaclAddServiceResult) String() string {
   }
   return fmt.Sprintf("CaaclAddServiceResult%v", string(b))
 }
+
 
 /*
 Add users and groups to a CA ACL.
@@ -6366,6 +6439,7 @@ func (t *CaaclAddUserResult) String() string {
   return fmt.Sprintf("CaaclAddUserResult%v", string(b))
 }
 
+
 /*
 Delete a CA ACL.
 */
@@ -6471,6 +6545,7 @@ func (t *CaaclDelResult) String() string {
   return fmt.Sprintf("CaaclDelResult%v", string(b))
 }
 
+
 /*
 Disable a CA ACL.
 */
@@ -6570,6 +6645,7 @@ func (t *CaaclDisableResult) String() string {
   return fmt.Sprintf("CaaclDisableResult%v", string(b))
 }
 
+
 /*
 Enable a CA ACL.
 */
@@ -6668,6 +6744,7 @@ func (t *CaaclEnableResult) String() string {
   }
   return fmt.Sprintf("CaaclEnableResult%v", string(b))
 }
+
 
 /*
 Search for CA ACLs.
@@ -6852,6 +6929,7 @@ func (t *CaaclFindResult) String() string {
   }
   return fmt.Sprintf("CaaclFindResult%v", string(b))
 }
+
 
 /*
 Modify a CA ACL.
@@ -7039,6 +7117,7 @@ func (t *CaaclModResult) String() string {
   return fmt.Sprintf("CaaclModResult%v", string(b))
 }
 
+
 /*
 Remove CAs from a CA ACL.
 */
@@ -7161,6 +7240,7 @@ func (t *CaaclRemoveCaResult) String() string {
   }
   return fmt.Sprintf("CaaclRemoveCaResult%v", string(b))
 }
+
 
 /*
 Remove target hosts and hostgroups from a CA ACL.
@@ -7291,6 +7371,7 @@ func (t *CaaclRemoveHostResult) String() string {
   return fmt.Sprintf("CaaclRemoveHostResult%v", string(b))
 }
 
+
 /*
 Remove profiles from a CA ACL.
 */
@@ -7414,6 +7495,7 @@ func (t *CaaclRemoveProfileResult) String() string {
   return fmt.Sprintf("CaaclRemoveProfileResult%v", string(b))
 }
 
+
 /*
 Remove services from a CA ACL.
 */
@@ -7536,6 +7618,7 @@ func (t *CaaclRemoveServiceResult) String() string {
   }
   return fmt.Sprintf("CaaclRemoveServiceResult%v", string(b))
 }
+
 
 /*
 Remove users and groups from a CA ACL.
@@ -7666,6 +7749,7 @@ func (t *CaaclRemoveUserResult) String() string {
   return fmt.Sprintf("CaaclRemoveUserResult%v", string(b))
 }
 
+
 /*
 Display the properties of a CA ACL.
 */
@@ -7788,6 +7872,7 @@ func (t *CaaclShowResult) String() string {
   }
   return fmt.Sprintf("CaaclShowResult%v", string(b))
 }
+
 
 /*
 Search for existing certificates.
@@ -8057,6 +8142,7 @@ func (t *CertFindResult) String() string {
   return fmt.Sprintf("CertFindResult%v", string(b))
 }
 
+
 /*
 Take a revoked certificate off hold.
 */
@@ -8149,6 +8235,7 @@ func (t *CertRemoveHoldResult) String() string {
   }
   return fmt.Sprintf("CertRemoveHoldResult%v", string(b))
 }
+
 
 /*
 Submit a certificate signing request.
@@ -8291,6 +8378,7 @@ func (t *CertRequestResult) String() string {
   return fmt.Sprintf("CertRequestResult%v", string(b))
 }
 
+
 /*
 Revoke a certificate.
 */
@@ -8389,6 +8477,7 @@ func (t *CertRevokeResult) String() string {
   }
   return fmt.Sprintf("CertRevokeResult%v", string(b))
 }
+
 
 /*
 Retrieve an existing certificate.
@@ -8519,6 +8608,7 @@ func (t *CertShowResult) String() string {
   return fmt.Sprintf("CertShowResult%v", string(b))
 }
 
+
 /*
 Check the status of a certificate signing request.
 */
@@ -8636,6 +8726,7 @@ func (t *CertStatusResult) String() string {
   return fmt.Sprintf("CertStatusResult%v", string(b))
 }
 
+
 /*
 Delete a Certificate Profile.
 */
@@ -8740,6 +8831,7 @@ func (t *CertprofileDelResult) String() string {
   }
   return fmt.Sprintf("CertprofileDelResult%v", string(b))
 }
+
 
 /*
 Search for Certificate Profiles.
@@ -8889,6 +8981,7 @@ func (t *CertprofileFindResult) String() string {
   return fmt.Sprintf("CertprofileFindResult%v", string(b))
 }
 
+
 /*
 Import a Certificate Profile.
 */
@@ -9017,6 +9110,7 @@ func (t *CertprofileImportResult) String() string {
   }
   return fmt.Sprintf("CertprofileImportResult%v", string(b))
 }
+
 
 /*
 Modify Certificate Profile configuration.
@@ -9174,6 +9268,7 @@ func (t *CertprofileModResult) String() string {
   return fmt.Sprintf("CertprofileModResult%v", string(b))
 }
 
+
 /*
 Display the properties of a Certificate Profile.
 */
@@ -9297,6 +9392,7 @@ func (t *CertprofileShowResult) String() string {
   return fmt.Sprintf("CertprofileShowResult%v", string(b))
 }
 
+
 /*
 Search for classes.
 */
@@ -9415,6 +9511,7 @@ func (t *ClassFindResult) String() string {
   return fmt.Sprintf("ClassFindResult%v", string(b))
 }
 
+
 /*
 Display information about a class.
 */
@@ -9525,6 +9622,7 @@ func (t *ClassShowResult) String() string {
   }
   return fmt.Sprintf("ClassShowResult%v", string(b))
 }
+
 
 /*
 Search for commands.
@@ -9644,6 +9742,7 @@ func (t *CommandFindResult) String() string {
   return fmt.Sprintf("CommandFindResult%v", string(b))
 }
 
+
 /*
 Display information about a command.
 */
@@ -9755,6 +9854,7 @@ func (t *CommandShowResult) String() string {
   return fmt.Sprintf("CommandShowResult%v", string(b))
 }
 
+
 /*
 Determine whether Schema Compatibility plugin is configured to serve trusted domain users and groups
 */
@@ -9835,6 +9935,7 @@ func (t *CompatIsEnabledResult) String() string {
   }
   return fmt.Sprintf("CompatIsEnabledResult%v", string(b))
 }
+
 
 /*
 Modify configuration options.
@@ -10082,6 +10183,7 @@ func (t *ConfigModResult) String() string {
   return fmt.Sprintf("ConfigModResult%v", string(b))
 }
 
+
 /*
 Show the current configuration.
 */
@@ -10192,6 +10294,7 @@ func (t *ConfigShowResult) String() string {
   }
   return fmt.Sprintf("ConfigShowResult%v", string(b))
 }
+
 
 /*
 
@@ -10330,6 +10433,7 @@ func (t *CosentryAddResult) String() string {
   return fmt.Sprintf("CosentryAddResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -10434,6 +10538,7 @@ func (t *CosentryDelResult) String() string {
   }
   return fmt.Sprintf("CosentryDelResult%v", string(b))
 }
+
 
 /*
 
@@ -10582,6 +10687,7 @@ func (t *CosentryFindResult) String() string {
   }
   return fmt.Sprintf("CosentryFindResult%v", string(b))
 }
+
 
 /*
 
@@ -10733,6 +10839,7 @@ func (t *CosentryModResult) String() string {
   return fmt.Sprintf("CosentryModResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -10849,6 +10956,7 @@ func (t *CosentryShowResult) String() string {
   }
   return fmt.Sprintf("CosentryShowResult%v", string(b))
 }
+
 
 /*
 Add a new delegation.
@@ -10985,6 +11093,7 @@ func (t *DelegationAddResult) String() string {
   return fmt.Sprintf("DelegationAddResult%v", string(b))
 }
 
+
 /*
 Delete a delegation.
 */
@@ -11083,6 +11192,7 @@ func (t *DelegationDelResult) String() string {
   }
   return fmt.Sprintf("DelegationDelResult%v", string(b))
 }
+
 
 /*
 Search for delegations.
@@ -11232,6 +11342,7 @@ func (t *DelegationFindResult) String() string {
   return fmt.Sprintf("DelegationFindResult%v", string(b))
 }
 
+
 /*
 Modify a delegation.
 */
@@ -11367,6 +11478,7 @@ func (t *DelegationModResult) String() string {
   return fmt.Sprintf("DelegationModResult%v", string(b))
 }
 
+
 /*
 Display information about a delegation.
 */
@@ -11478,6 +11590,7 @@ func (t *DelegationShowResult) String() string {
   return fmt.Sprintf("DelegationShowResult%v", string(b))
 }
 
+
 /*
 Checks if any of the servers has the DNS service enabled.
 */
@@ -11570,6 +11683,7 @@ func (t *DNSIsEnabledResult) String() string {
   }
   return fmt.Sprintf("DNSIsEnabledResult%v", string(b))
 }
+
 
 /*
 Resolve a host name in DNS. (Deprecated)
@@ -11669,6 +11783,7 @@ func (t *DNSResolveResult) String() string {
   }
   return fmt.Sprintf("DNSResolveResult%v", string(b))
 }
+
 
 /*
 Update location and IPA server DNS records
@@ -11774,6 +11889,7 @@ func (t *DNSUpdateSystemRecordsResult) String() string {
   }
   return fmt.Sprintf("DNSUpdateSystemRecordsResult%v", string(b))
 }
+
 
 /*
 Modify global DNS configuration.
@@ -11931,6 +12047,7 @@ func (t *DnsconfigModResult) String() string {
   return fmt.Sprintf("DnsconfigModResult%v", string(b))
 }
 
+
 /*
 Show the current global DNS configuration.
 */
@@ -12042,6 +12159,7 @@ func (t *DnsconfigShowResult) String() string {
   return fmt.Sprintf("DnsconfigShowResult%v", string(b))
 }
 
+
 /*
 Create new DNS forward zone.
 */
@@ -12089,7 +12207,7 @@ type DnsforwardzoneAddOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Reverse zone IP network
@@ -12177,7 +12295,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsforwardzoneAddResult) String() string {
@@ -12190,6 +12308,7 @@ func (t *DnsforwardzoneAddResult) String() string {
   }
   return fmt.Sprintf("DnsforwardzoneAddResult%v", string(b))
 }
+
 
 /*
 Add a permission for per-forward zone access delegation.
@@ -12238,7 +12357,7 @@ type DnsforwardzoneAddPermissionOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   }
 
 type dnsforwardzoneAddPermissionKwParams struct {
@@ -12290,6 +12409,7 @@ func (t *DnsforwardzoneAddPermissionResult) String() string {
   return fmt.Sprintf("DnsforwardzoneAddPermissionResult%v", string(b))
 }
 
+
 /*
 Delete DNS forward zone.
 */
@@ -12337,7 +12457,7 @@ type DnsforwardzoneDelOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *[]string `json:"idnsname,omitempty"`
+    Idnsname *[]DNSName `json:"idnsname,omitempty"`
   
     /*
 
@@ -12381,7 +12501,7 @@ List of deletions that failed
 
     (required)
     */
-    Value []string `json:"value,omitempty"`
+    Value []DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsforwardzoneDelResult) String() string {
@@ -12394,6 +12514,7 @@ func (t *DnsforwardzoneDelResult) String() string {
   }
   return fmt.Sprintf("DnsforwardzoneDelResult%v", string(b))
 }
+
 
 /*
 Disable DNS Forward Zone.
@@ -12442,7 +12563,7 @@ type DnsforwardzoneDisableOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   }
 
 type dnsforwardzoneDisableKwParams struct {
@@ -12480,7 +12601,7 @@ True means the operation was successful
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsforwardzoneDisableResult) String() string {
@@ -12493,6 +12614,7 @@ func (t *DnsforwardzoneDisableResult) String() string {
   }
   return fmt.Sprintf("DnsforwardzoneDisableResult%v", string(b))
 }
+
 
 /*
 Enable DNS Forward Zone.
@@ -12541,7 +12663,7 @@ type DnsforwardzoneEnableOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   }
 
 type dnsforwardzoneEnableKwParams struct {
@@ -12579,7 +12701,7 @@ True means the operation was successful
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsforwardzoneEnableResult) String() string {
@@ -12592,6 +12714,7 @@ func (t *DnsforwardzoneEnableResult) String() string {
   }
   return fmt.Sprintf("DnsforwardzoneEnableResult%v", string(b))
 }
+
 
 /*
 Search for DNS forward zones.
@@ -12641,7 +12764,7 @@ type DnsforwardzoneFindOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Reverse zone IP network
@@ -12753,6 +12876,7 @@ func (t *DnsforwardzoneFindResult) String() string {
   return fmt.Sprintf("DnsforwardzoneFindResult%v", string(b))
 }
 
+
 /*
 Modify DNS forward zone.
 */
@@ -12800,7 +12924,7 @@ type DnsforwardzoneModOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Reverse zone IP network
@@ -12895,7 +13019,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsforwardzoneModResult) String() string {
@@ -12908,6 +13032,7 @@ func (t *DnsforwardzoneModResult) String() string {
   }
   return fmt.Sprintf("DnsforwardzoneModResult%v", string(b))
 }
+
 
 /*
 Remove a permission for per-forward zone access delegation.
@@ -12956,7 +13081,7 @@ type DnsforwardzoneRemovePermissionOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   }
 
 type dnsforwardzoneRemovePermissionKwParams struct {
@@ -13008,6 +13133,7 @@ func (t *DnsforwardzoneRemovePermissionResult) String() string {
   return fmt.Sprintf("DnsforwardzoneRemovePermissionResult%v", string(b))
 }
 
+
 /*
 Display information about a DNS forward zone.
 */
@@ -13055,7 +13181,7 @@ type DnsforwardzoneShowOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Rights
@@ -13111,7 +13237,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsforwardzoneShowResult) String() string {
@@ -13124,6 +13250,7 @@ func (t *DnsforwardzoneShowResult) String() string {
   }
   return fmt.Sprintf("DnsforwardzoneShowResult%v", string(b))
 }
+
 
 /*
 Add new DNS resource record.
@@ -13169,7 +13296,7 @@ type DnsrecordAddArgs struct {
 Record name
 Record name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   }
 
 type DnsrecordAddOptionalArgs struct {
@@ -13178,7 +13305,7 @@ type DnsrecordAddOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Dnszoneidnsname *string `json:"dnszoneidnsname,omitempty"`
+    Dnszoneidnsname *DNSName `json:"dnszoneidnsname,omitempty"`
   
     /*
 Time to live
@@ -13256,7 +13383,7 @@ AFSDB Subtype
 AFSDB Hostname
 
     */
-    AfsdbPartHostname *string `json:"afsdb_part_hostname,omitempty"`
+    AfsdbPartHostname *DNSName `json:"afsdb_part_hostname,omitempty"`
   
     /*
 APL record
@@ -13304,7 +13431,7 @@ Raw CNAME records
 CNAME Hostname
 A hostname which this alias hostname points to
     */
-    CnamePartHostname *string `json:"cname_part_hostname,omitempty"`
+    CnamePartHostname *DNSName `json:"cname_part_hostname,omitempty"`
   
     /*
 DHCID record
@@ -13352,7 +13479,7 @@ Raw DNAME records
 DNAME Target
 
     */
-    DnamePartTarget *string `json:"dname_part_target,omitempty"`
+    DnamePartTarget *DNSName `json:"dname_part_target,omitempty"`
   
     /*
 DS record
@@ -13418,7 +13545,7 @@ Preference given to this exchanger. Lower values are more preferred
 KX Exchanger
 A host willing to act as a key exchanger
     */
-    KxPartExchanger *string `json:"kx_part_exchanger,omitempty"`
+    KxPartExchanger *DNSName `json:"kx_part_exchanger,omitempty"`
   
     /*
 LOC record
@@ -13514,7 +13641,7 @@ Preference given to this exchanger. Lower values are more preferred
 MX Exchanger
 A host willing to act as a mail exchanger
     */
-    MxPartExchanger *string `json:"mx_part_exchanger,omitempty"`
+    MxPartExchanger *DNSName `json:"mx_part_exchanger,omitempty"`
   
     /*
 NAPTR record
@@ -13568,7 +13695,7 @@ Raw NS records
 NS Hostname
 
     */
-    NsPartHostname *string `json:"ns_part_hostname,omitempty"`
+    NsPartHostname *DNSName `json:"ns_part_hostname,omitempty"`
   
     /*
 NSEC record
@@ -13586,7 +13713,7 @@ Raw PTR records
 PTR Hostname
 The hostname this reverse record points to
     */
-    PtrPartHostname *string `json:"ptr_part_hostname,omitempty"`
+    PtrPartHostname *DNSName `json:"ptr_part_hostname,omitempty"`
   
     /*
 RRSIG record
@@ -13640,7 +13767,7 @@ SRV Port
 SRV Target
 The domain name of the target host or '.' if the service is decidedly not available at this domain
     */
-    SrvPartTarget *string `json:"srv_part_target,omitempty"`
+    SrvPartTarget *DNSName `json:"srv_part_target,omitempty"`
   
     /*
 SSHFP record
@@ -13782,7 +13909,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsrecordAddResult) String() string {
@@ -13795,6 +13922,7 @@ func (t *DnsrecordAddResult) String() string {
   }
   return fmt.Sprintf("DnsrecordAddResult%v", string(b))
 }
+
 
 /*
 Delete DNS resource record.
@@ -13840,7 +13968,7 @@ type DnsrecordDelArgs struct {
 Record name
 Record name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   }
 
 type DnsrecordDelOptionalArgs struct {
@@ -13849,7 +13977,7 @@ type DnsrecordDelOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Dnszoneidnsname *string `json:"dnszoneidnsname,omitempty"`
+    Dnszoneidnsname *DNSName `json:"dnszoneidnsname,omitempty"`
   
     /*
 Time to live
@@ -14091,7 +14219,7 @@ List of deletions that failed
 
     (required)
     */
-    Value []string `json:"value,omitempty"`
+    Value []DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsrecordDelResult) String() string {
@@ -14104,6 +14232,7 @@ func (t *DnsrecordDelResult) String() string {
   }
   return fmt.Sprintf("DnsrecordDelResult%v", string(b))
 }
+
 
 /*
 Delete DNS record entry.
@@ -14149,7 +14278,7 @@ type DnsrecordDelentryArgs struct {
 Record name
 Record name
     */
-    Idnsname []string `json:"idnsname,omitempty"`
+    Idnsname []DNSName `json:"idnsname,omitempty"`
   }
 
 type DnsrecordDelentryOptionalArgs struct {
@@ -14158,7 +14287,7 @@ type DnsrecordDelentryOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Dnszoneidnsname *string `json:"dnszoneidnsname,omitempty"`
+    Dnszoneidnsname *DNSName `json:"dnszoneidnsname,omitempty"`
   
     /*
 
@@ -14202,7 +14331,7 @@ List of deletions that failed
 
     (required)
     */
-    Value []string `json:"value,omitempty"`
+    Value []DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsrecordDelentryResult) String() string {
@@ -14215,6 +14344,7 @@ func (t *DnsrecordDelentryResult) String() string {
   }
   return fmt.Sprintf("DnsrecordDelentryResult%v", string(b))
 }
+
 
 /*
 Search for DNS resources.
@@ -14264,13 +14394,13 @@ type DnsrecordFindOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Dnszoneidnsname *string `json:"dnszoneidnsname,omitempty"`
+    Dnszoneidnsname *DNSName `json:"dnszoneidnsname,omitempty"`
   
     /*
 Record name
 Record name
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Time to live
@@ -14550,6 +14680,7 @@ func (t *DnsrecordFindResult) String() string {
   return fmt.Sprintf("DnsrecordFindResult%v", string(b))
 }
 
+
 /*
 Modify a DNS resource record.
 */
@@ -14594,7 +14725,7 @@ type DnsrecordModArgs struct {
 Record name
 Record name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   }
 
 type DnsrecordModOptionalArgs struct {
@@ -14603,7 +14734,7 @@ type DnsrecordModOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Dnszoneidnsname *string `json:"dnszoneidnsname,omitempty"`
+    Dnszoneidnsname *DNSName `json:"dnszoneidnsname,omitempty"`
   
     /*
 Time to live
@@ -14669,7 +14800,7 @@ AFSDB Subtype
 AFSDB Hostname
 
     */
-    AfsdbPartHostname *string `json:"afsdb_part_hostname,omitempty"`
+    AfsdbPartHostname *DNSName `json:"afsdb_part_hostname,omitempty"`
   
     /*
 APL record
@@ -14717,7 +14848,7 @@ Raw CNAME records
 CNAME Hostname
 A hostname which this alias hostname points to
     */
-    CnamePartHostname *string `json:"cname_part_hostname,omitempty"`
+    CnamePartHostname *DNSName `json:"cname_part_hostname,omitempty"`
   
     /*
 DHCID record
@@ -14765,7 +14896,7 @@ Raw DNAME records
 DNAME Target
 
     */
-    DnamePartTarget *string `json:"dname_part_target,omitempty"`
+    DnamePartTarget *DNSName `json:"dname_part_target,omitempty"`
   
     /*
 DS record
@@ -14831,7 +14962,7 @@ Preference given to this exchanger. Lower values are more preferred
 KX Exchanger
 A host willing to act as a key exchanger
     */
-    KxPartExchanger *string `json:"kx_part_exchanger,omitempty"`
+    KxPartExchanger *DNSName `json:"kx_part_exchanger,omitempty"`
   
     /*
 LOC record
@@ -14927,7 +15058,7 @@ Preference given to this exchanger. Lower values are more preferred
 MX Exchanger
 A host willing to act as a mail exchanger
     */
-    MxPartExchanger *string `json:"mx_part_exchanger,omitempty"`
+    MxPartExchanger *DNSName `json:"mx_part_exchanger,omitempty"`
   
     /*
 NAPTR record
@@ -14981,7 +15112,7 @@ Raw NS records
 NS Hostname
 
     */
-    NsPartHostname *string `json:"ns_part_hostname,omitempty"`
+    NsPartHostname *DNSName `json:"ns_part_hostname,omitempty"`
   
     /*
 NSEC record
@@ -14999,7 +15130,7 @@ Raw PTR records
 PTR Hostname
 The hostname this reverse record points to
     */
-    PtrPartHostname *string `json:"ptr_part_hostname,omitempty"`
+    PtrPartHostname *DNSName `json:"ptr_part_hostname,omitempty"`
   
     /*
 RRSIG record
@@ -15053,7 +15184,7 @@ SRV Port
 SRV Target
 The domain name of the target host or '.' if the service is decidedly not available at this domain
     */
-    SrvPartTarget *string `json:"srv_part_target,omitempty"`
+    SrvPartTarget *DNSName `json:"srv_part_target,omitempty"`
   
     /*
 SSHFP record
@@ -15170,7 +15301,7 @@ Print entries as stored on the server. Only affects output format.
 Rename
 Rename the DNS resource record object
     */
-    Rename *string `json:"rename,omitempty"`
+    Rename *DNSName `json:"rename,omitempty"`
   }
 
 type dnsrecordModKwParams struct {
@@ -15208,7 +15339,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsrecordModResult) String() string {
@@ -15221,6 +15352,7 @@ func (t *DnsrecordModResult) String() string {
   }
   return fmt.Sprintf("DnsrecordModResult%v", string(b))
 }
+
 
 /*
 Display DNS resource.
@@ -15266,7 +15398,7 @@ type DnsrecordShowArgs struct {
 Record name
 Record name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   }
 
 type DnsrecordShowOptionalArgs struct {
@@ -15275,7 +15407,7 @@ type DnsrecordShowOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Dnszoneidnsname *string `json:"dnszoneidnsname,omitempty"`
+    Dnszoneidnsname *DNSName `json:"dnszoneidnsname,omitempty"`
   
     /*
 Rights
@@ -15337,7 +15469,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnsrecordShowResult) String() string {
@@ -15350,6 +15482,7 @@ func (t *DnsrecordShowResult) String() string {
   }
   return fmt.Sprintf("DnsrecordShowResult%v", string(b))
 }
+
 
 /*
 
@@ -15444,6 +15577,7 @@ func (t *DnsrecordSplitPartsResult) String() string {
   return fmt.Sprintf("DnsrecordSplitPartsResult%v", string(b))
 }
 
+
 /*
 Search for DNS servers.
 */
@@ -15498,7 +15632,7 @@ DNS Server name
 SOA mname override
 SOA mname (authoritative server) override
     */
-    Idnssoamname *string `json:"idnssoamname,omitempty"`
+    Idnssoamname *DNSName `json:"idnssoamname,omitempty"`
   
     /*
 Forwarders
@@ -15598,6 +15732,7 @@ func (t *DnsserverFindResult) String() string {
   return fmt.Sprintf("DnsserverFindResult%v", string(b))
 }
 
+
 /*
 Modify DNS server configuration
 */
@@ -15651,7 +15786,7 @@ type DnsserverModOptionalArgs struct {
 SOA mname override
 SOA mname (authoritative server) override
     */
-    Idnssoamname *string `json:"idnssoamname,omitempty"`
+    Idnssoamname *DNSName `json:"idnssoamname,omitempty"`
   
     /*
 Forwarders
@@ -15753,6 +15888,7 @@ func (t *DnsserverModResult) String() string {
   }
   return fmt.Sprintf("DnsserverModResult%v", string(b))
 }
+
 
 /*
 Display configuration of a DNS server.
@@ -15871,6 +16007,7 @@ func (t *DnsserverShowResult) String() string {
   return fmt.Sprintf("DnsserverShowResult%v", string(b))
 }
 
+
 /*
 Create new DNS zone (SOA record).
 */
@@ -15924,7 +16061,7 @@ type DnszoneAddOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Reverse zone IP network
@@ -15948,13 +16085,13 @@ Per-zone conditional forwarding policy. Set to "none" to disable forwarding to g
 Authoritative nameserver
 Authoritative nameserver domain name
     */
-    Idnssoamname *string `json:"idnssoamname,omitempty"`
+    Idnssoamname *DNSName `json:"idnssoamname,omitempty"`
   
     /*
 Administrator e-mail address
 Administrator e-mail address
     */
-    Idnssoarname *string `json:"idnssoarname,omitempty"`
+    Idnssoarname *DNSName `json:"idnssoarname,omitempty"`
   
     /*
 SOA refresh
@@ -16126,7 +16263,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnszoneAddResult) String() string {
@@ -16139,6 +16276,7 @@ func (t *DnszoneAddResult) String() string {
   }
   return fmt.Sprintf("DnszoneAddResult%v", string(b))
 }
+
 
 /*
 Add a permission for per-zone access delegation.
@@ -16187,7 +16325,7 @@ type DnszoneAddPermissionOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   }
 
 type dnszoneAddPermissionKwParams struct {
@@ -16239,6 +16377,7 @@ func (t *DnszoneAddPermissionResult) String() string {
   return fmt.Sprintf("DnszoneAddPermissionResult%v", string(b))
 }
 
+
 /*
 Delete DNS zone (SOA record).
 */
@@ -16286,7 +16425,7 @@ type DnszoneDelOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *[]string `json:"idnsname,omitempty"`
+    Idnsname *[]DNSName `json:"idnsname,omitempty"`
   
     /*
 
@@ -16330,7 +16469,7 @@ List of deletions that failed
 
     (required)
     */
-    Value []string `json:"value,omitempty"`
+    Value []DNSName `json:"value,omitempty"`
   }
 
 func (t *DnszoneDelResult) String() string {
@@ -16343,6 +16482,7 @@ func (t *DnszoneDelResult) String() string {
   }
   return fmt.Sprintf("DnszoneDelResult%v", string(b))
 }
+
 
 /*
 Disable DNS Zone.
@@ -16391,7 +16531,7 @@ type DnszoneDisableOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   }
 
 type dnszoneDisableKwParams struct {
@@ -16429,7 +16569,7 @@ True means the operation was successful
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnszoneDisableResult) String() string {
@@ -16442,6 +16582,7 @@ func (t *DnszoneDisableResult) String() string {
   }
   return fmt.Sprintf("DnszoneDisableResult%v", string(b))
 }
+
 
 /*
 Enable DNS Zone.
@@ -16490,7 +16631,7 @@ type DnszoneEnableOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   }
 
 type dnszoneEnableKwParams struct {
@@ -16528,7 +16669,7 @@ True means the operation was successful
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnszoneEnableResult) String() string {
@@ -16541,6 +16682,7 @@ func (t *DnszoneEnableResult) String() string {
   }
   return fmt.Sprintf("DnszoneEnableResult%v", string(b))
 }
+
 
 /*
 Search for DNS zones (SOA records).
@@ -16590,7 +16732,7 @@ type DnszoneFindOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Reverse zone IP network
@@ -16620,13 +16762,13 @@ Per-zone conditional forwarding policy. Set to "none" to disable forwarding to g
 Authoritative nameserver
 Authoritative nameserver domain name
     */
-    Idnssoamname *string `json:"idnssoamname,omitempty"`
+    Idnssoamname *DNSName `json:"idnssoamname,omitempty"`
   
     /*
 Administrator e-mail address
 Administrator e-mail address
     */
-    Idnssoarname *string `json:"idnssoarname,omitempty"`
+    Idnssoarname *DNSName `json:"idnssoarname,omitempty"`
   
     /*
 SOA serial
@@ -16810,6 +16952,7 @@ func (t *DnszoneFindResult) String() string {
   return fmt.Sprintf("DnszoneFindResult%v", string(b))
 }
 
+
 /*
 Modify DNS zone (SOA record).
 */
@@ -16857,7 +17000,7 @@ type DnszoneModOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Reverse zone IP network
@@ -16881,13 +17024,13 @@ Per-zone conditional forwarding policy. Set to "none" to disable forwarding to g
 Authoritative nameserver
 Authoritative nameserver domain name
     */
-    Idnssoamname *string `json:"idnssoamname,omitempty"`
+    Idnssoamname *DNSName `json:"idnssoamname,omitempty"`
   
     /*
 Administrator e-mail address
 Administrator e-mail address
     */
-    Idnssoarname *string `json:"idnssoarname,omitempty"`
+    Idnssoarname *DNSName `json:"idnssoarname,omitempty"`
   
     /*
 SOA serial
@@ -17060,7 +17203,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnszoneModResult) String() string {
@@ -17073,6 +17216,7 @@ func (t *DnszoneModResult) String() string {
   }
   return fmt.Sprintf("DnszoneModResult%v", string(b))
 }
+
 
 /*
 Remove a permission for per-zone access delegation.
@@ -17121,7 +17265,7 @@ type DnszoneRemovePermissionOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   }
 
 type dnszoneRemovePermissionKwParams struct {
@@ -17173,6 +17317,7 @@ func (t *DnszoneRemovePermissionResult) String() string {
   return fmt.Sprintf("DnszoneRemovePermissionResult%v", string(b))
 }
 
+
 /*
 Display information about a DNS zone (SOA record).
 */
@@ -17220,7 +17365,7 @@ type DnszoneShowOptionalArgs struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Rights
@@ -17276,7 +17421,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *DnszoneShowResult) String() string {
@@ -17289,6 +17434,7 @@ func (t *DnszoneShowResult) String() string {
   }
   return fmt.Sprintf("DnszoneShowResult%v", string(b))
 }
+
 
 /*
 Query current Domain Level.
@@ -17370,6 +17516,7 @@ func (t *DomainlevelGetResult) String() string {
   }
   return fmt.Sprintf("DomainlevelGetResult%v", string(b))
 }
+
 
 /*
 Change current Domain Level.
@@ -17457,6 +17604,7 @@ func (t *DomainlevelSetResult) String() string {
   }
   return fmt.Sprintf("DomainlevelSetResult%v", string(b))
 }
+
 
 /*
 Create a new group.
@@ -17613,6 +17761,7 @@ func (t *GroupAddResult) String() string {
   return fmt.Sprintf("GroupAddResult%v", string(b))
 }
 
+
 /*
 Add members to a group.
 */
@@ -17748,6 +17897,7 @@ func (t *GroupAddMemberResult) String() string {
   return fmt.Sprintf("GroupAddMemberResult%v", string(b))
 }
 
+
 /*
 Delete group.
 */
@@ -17853,6 +18003,7 @@ func (t *GroupDelResult) String() string {
   return fmt.Sprintf("GroupDelResult%v", string(b))
 }
 
+
 /*
 Detach a managed group from a user.
 */
@@ -17951,6 +18102,7 @@ func (t *GroupDetachResult) String() string {
   }
   return fmt.Sprintf("GroupDetachResult%v", string(b))
 }
+
 
 /*
 Search for groups.
@@ -18214,6 +18366,7 @@ func (t *GroupFindResult) String() string {
   return fmt.Sprintf("GroupFindResult%v", string(b))
 }
 
+
 /*
 Modify a group.
 */
@@ -18388,6 +18541,7 @@ func (t *GroupModResult) String() string {
   return fmt.Sprintf("GroupModResult%v", string(b))
 }
 
+
 /*
 Remove members from a group.
 */
@@ -18523,6 +18677,7 @@ func (t *GroupRemoveMemberResult) String() string {
   return fmt.Sprintf("GroupRemoveMemberResult%v", string(b))
 }
 
+
 /*
 Display information about a named group.
 */
@@ -18645,6 +18800,7 @@ func (t *GroupShowResult) String() string {
   }
   return fmt.Sprintf("GroupShowResult%v", string(b))
 }
+
 
 /*
 Create a new HBAC rule.
@@ -18825,6 +18981,7 @@ func (t *HbacruleAddResult) String() string {
   return fmt.Sprintf("HbacruleAddResult%v", string(b))
 }
 
+
 /*
 Add target hosts and hostgroups to an HBAC rule.
 */
@@ -18953,6 +19110,7 @@ func (t *HbacruleAddHostResult) String() string {
   }
   return fmt.Sprintf("HbacruleAddHostResult%v", string(b))
 }
+
 
 /*
 Add services to an HBAC rule.
@@ -19083,6 +19241,7 @@ func (t *HbacruleAddServiceResult) String() string {
   return fmt.Sprintf("HbacruleAddServiceResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -19211,6 +19370,7 @@ func (t *HbacruleAddSourcehostResult) String() string {
   }
   return fmt.Sprintf("HbacruleAddSourcehostResult%v", string(b))
 }
+
 
 /*
 Add users and groups to an HBAC rule.
@@ -19341,6 +19501,7 @@ func (t *HbacruleAddUserResult) String() string {
   return fmt.Sprintf("HbacruleAddUserResult%v", string(b))
 }
 
+
 /*
 Delete an HBAC rule.
 */
@@ -19446,6 +19607,7 @@ func (t *HbacruleDelResult) String() string {
   return fmt.Sprintf("HbacruleDelResult%v", string(b))
 }
 
+
 /*
 Disable an HBAC rule.
 */
@@ -19545,6 +19707,7 @@ func (t *HbacruleDisableResult) String() string {
   return fmt.Sprintf("HbacruleDisableResult%v", string(b))
 }
 
+
 /*
 Enable an HBAC rule.
 */
@@ -19643,6 +19806,7 @@ func (t *HbacruleEnableResult) String() string {
   }
   return fmt.Sprintf("HbacruleEnableResult%v", string(b))
 }
+
 
 /*
 Search for HBAC rules.
@@ -19833,6 +19997,7 @@ func (t *HbacruleFindResult) String() string {
   }
   return fmt.Sprintf("HbacruleFindResult%v", string(b))
 }
+
 
 /*
 Modify an HBAC rule.
@@ -20026,6 +20191,7 @@ func (t *HbacruleModResult) String() string {
   return fmt.Sprintf("HbacruleModResult%v", string(b))
 }
 
+
 /*
 Remove target hosts and hostgroups from an HBAC rule.
 */
@@ -20154,6 +20320,7 @@ func (t *HbacruleRemoveHostResult) String() string {
   }
   return fmt.Sprintf("HbacruleRemoveHostResult%v", string(b))
 }
+
 
 /*
 Remove service and service groups from an HBAC rule.
@@ -20284,6 +20451,7 @@ func (t *HbacruleRemoveServiceResult) String() string {
   return fmt.Sprintf("HbacruleRemoveServiceResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -20412,6 +20580,7 @@ func (t *HbacruleRemoveSourcehostResult) String() string {
   }
   return fmt.Sprintf("HbacruleRemoveSourcehostResult%v", string(b))
 }
+
 
 /*
 Remove users and groups from an HBAC rule.
@@ -20542,6 +20711,7 @@ func (t *HbacruleRemoveUserResult) String() string {
   return fmt.Sprintf("HbacruleRemoveUserResult%v", string(b))
 }
 
+
 /*
 Display the properties of an HBAC rule.
 */
@@ -20664,6 +20834,7 @@ func (t *HbacruleShowResult) String() string {
   }
   return fmt.Sprintf("HbacruleShowResult%v", string(b))
 }
+
 
 /*
 Add a new HBAC service.
@@ -20802,6 +20973,7 @@ func (t *HbacsvcAddResult) String() string {
   return fmt.Sprintf("HbacsvcAddResult%v", string(b))
 }
 
+
 /*
 Delete an existing HBAC service.
 */
@@ -20906,6 +21078,7 @@ func (t *HbacsvcDelResult) String() string {
   }
   return fmt.Sprintf("HbacsvcDelResult%v", string(b))
 }
+
 
 /*
 Search for HBAC services.
@@ -21054,6 +21227,7 @@ func (t *HbacsvcFindResult) String() string {
   }
   return fmt.Sprintf("HbacsvcFindResult%v", string(b))
 }
+
 
 /*
 Modify an HBAC service.
@@ -21205,6 +21379,7 @@ func (t *HbacsvcModResult) String() string {
   return fmt.Sprintf("HbacsvcModResult%v", string(b))
 }
 
+
 /*
 Display information about an HBAC service.
 */
@@ -21327,6 +21502,7 @@ func (t *HbacsvcShowResult) String() string {
   }
   return fmt.Sprintf("HbacsvcShowResult%v", string(b))
 }
+
 
 /*
 Add a new HBAC service group.
@@ -21465,6 +21641,7 @@ func (t *HbacsvcgroupAddResult) String() string {
   return fmt.Sprintf("HbacsvcgroupAddResult%v", string(b))
 }
 
+
 /*
 Add members to an HBAC service group.
 */
@@ -21588,6 +21765,7 @@ func (t *HbacsvcgroupAddMemberResult) String() string {
   return fmt.Sprintf("HbacsvcgroupAddMemberResult%v", string(b))
 }
 
+
 /*
 Delete an HBAC service group.
 */
@@ -21692,6 +21870,7 @@ func (t *HbacsvcgroupDelResult) String() string {
   }
   return fmt.Sprintf("HbacsvcgroupDelResult%v", string(b))
 }
+
 
 /*
 Search for an HBAC service group.
@@ -21840,6 +22019,7 @@ func (t *HbacsvcgroupFindResult) String() string {
   }
   return fmt.Sprintf("HbacsvcgroupFindResult%v", string(b))
 }
+
 
 /*
 Modify an HBAC service group.
@@ -21991,6 +22171,7 @@ func (t *HbacsvcgroupModResult) String() string {
   return fmt.Sprintf("HbacsvcgroupModResult%v", string(b))
 }
 
+
 /*
 Remove members from an HBAC service group.
 */
@@ -22114,6 +22295,7 @@ func (t *HbacsvcgroupRemoveMemberResult) String() string {
   return fmt.Sprintf("HbacsvcgroupRemoveMemberResult%v", string(b))
 }
 
+
 /*
 Display information about an HBAC service group.
 */
@@ -22236,6 +22418,7 @@ func (t *HbacsvcgroupShowResult) String() string {
   }
   return fmt.Sprintf("HbacsvcgroupShowResult%v", string(b))
 }
+
 
 /*
 Simulate use of Host-based access controls
@@ -22401,6 +22584,7 @@ func (t *HbactestResult) String() string {
   }
   return fmt.Sprintf("HbactestResult%v", string(b))
 }
+
 
 /*
 Add a new host.
@@ -22647,6 +22831,7 @@ func (t *HostAddResult) String() string {
   return fmt.Sprintf("HostAddResult%v", string(b))
 }
 
+
 /*
 Add certificates to host entry
 */
@@ -22769,6 +22954,7 @@ func (t *HostAddCertResult) String() string {
   }
   return fmt.Sprintf("HostAddCertResult%v", string(b))
 }
+
 
 /*
 Add hosts that can manage this host.
@@ -22893,6 +23079,7 @@ func (t *HostAddManagedbyResult) String() string {
   return fmt.Sprintf("HostAddManagedbyResult%v", string(b))
 }
 
+
 /*
 Add new principal alias to host entry
 */
@@ -23015,6 +23202,7 @@ func (t *HostAddPrincipalResult) String() string {
   }
   return fmt.Sprintf("HostAddPrincipalResult%v", string(b))
 }
+
 
 /*
 Allow users, groups, hosts or host groups to create a keytab of this host.
@@ -23157,6 +23345,7 @@ func (t *HostAllowCreateKeytabResult) String() string {
   return fmt.Sprintf("HostAllowCreateKeytabResult%v", string(b))
 }
 
+
 /*
 Allow users, groups, hosts or host groups to retrieve a keytab of this host.
 */
@@ -23298,6 +23487,7 @@ func (t *HostAllowRetrieveKeytabResult) String() string {
   return fmt.Sprintf("HostAllowRetrieveKeytabResult%v", string(b))
 }
 
+
 /*
 Delete a host.
 */
@@ -23409,6 +23599,7 @@ func (t *HostDelResult) String() string {
   return fmt.Sprintf("HostDelResult%v", string(b))
 }
 
+
 /*
 Disable the Kerberos key, SSL certificate and all services of a host.
 */
@@ -23507,6 +23698,7 @@ func (t *HostDisableResult) String() string {
   }
   return fmt.Sprintf("HostDisableResult%v", string(b))
 }
+
 
 /*
 Disallow users, groups, hosts or host groups to create a keytab of this host.
@@ -23649,6 +23841,7 @@ func (t *HostDisallowCreateKeytabResult) String() string {
   return fmt.Sprintf("HostDisallowCreateKeytabResult%v", string(b))
 }
 
+
 /*
 Disallow users, groups, hosts or host groups to retrieve a keytab of this host.
 */
@@ -23789,6 +23982,7 @@ func (t *HostDisallowRetrieveKeytabResult) String() string {
   }
   return fmt.Sprintf("HostDisallowRetrieveKeytabResult%v", string(b))
 }
+
 
 /*
 Search for hosts.
@@ -24094,6 +24288,7 @@ func (t *HostFindResult) String() string {
   return fmt.Sprintf("HostFindResult%v", string(b))
 }
 
+
 /*
 Modify information about a host.
 */
@@ -24346,6 +24541,7 @@ func (t *HostModResult) String() string {
   return fmt.Sprintf("HostModResult%v", string(b))
 }
 
+
 /*
 Remove certificates from host entry
 */
@@ -24468,6 +24664,7 @@ func (t *HostRemoveCertResult) String() string {
   }
   return fmt.Sprintf("HostRemoveCertResult%v", string(b))
 }
+
 
 /*
 Remove hosts that can manage this host.
@@ -24592,6 +24789,7 @@ func (t *HostRemoveManagedbyResult) String() string {
   return fmt.Sprintf("HostRemoveManagedbyResult%v", string(b))
 }
 
+
 /*
 Remove principal alias from a host entry
 */
@@ -24714,6 +24912,7 @@ func (t *HostRemovePrincipalResult) String() string {
   }
   return fmt.Sprintf("HostRemovePrincipalResult%v", string(b))
 }
+
 
 /*
 Display information about a host.
@@ -24843,6 +25042,7 @@ func (t *HostShowResult) String() string {
   }
   return fmt.Sprintf("HostShowResult%v", string(b))
 }
+
 
 /*
 Add a new hostgroup.
@@ -24981,6 +25181,7 @@ func (t *HostgroupAddResult) String() string {
   return fmt.Sprintf("HostgroupAddResult%v", string(b))
 }
 
+
 /*
 Add members to a hostgroup.
 */
@@ -25110,6 +25311,7 @@ func (t *HostgroupAddMemberResult) String() string {
   return fmt.Sprintf("HostgroupAddMemberResult%v", string(b))
 }
 
+
 /*
 Delete a hostgroup.
 */
@@ -25214,6 +25416,7 @@ func (t *HostgroupDelResult) String() string {
   }
   return fmt.Sprintf("HostgroupDelResult%v", string(b))
 }
+
 
 /*
 Search for hostgroups.
@@ -25435,6 +25638,7 @@ func (t *HostgroupFindResult) String() string {
   return fmt.Sprintf("HostgroupFindResult%v", string(b))
 }
 
+
 /*
 Modify a hostgroup.
 */
@@ -25585,6 +25789,7 @@ func (t *HostgroupModResult) String() string {
   return fmt.Sprintf("HostgroupModResult%v", string(b))
 }
 
+
 /*
 Remove members from a hostgroup.
 */
@@ -25714,6 +25919,7 @@ func (t *HostgroupRemoveMemberResult) String() string {
   return fmt.Sprintf("HostgroupRemoveMemberResult%v", string(b))
 }
 
+
 /*
 Display information about a hostgroup.
 */
@@ -25837,6 +26043,7 @@ func (t *HostgroupShowResult) String() string {
   return fmt.Sprintf("HostgroupShowResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -25917,6 +26124,7 @@ func (t *I18nMessagesResult) String() string {
   }
   return fmt.Sprintf("I18nMessagesResult%v", string(b))
 }
+
 
 /*
 Add a new Group ID override.
@@ -26073,6 +26281,7 @@ func (t *IdoverridegroupAddResult) String() string {
   return fmt.Sprintf("IdoverridegroupAddResult%v", string(b))
 }
 
+
 /*
 Delete an Group ID override.
 */
@@ -26189,6 +26398,7 @@ func (t *IdoverridegroupDelResult) String() string {
   }
   return fmt.Sprintf("IdoverridegroupDelResult%v", string(b))
 }
+
 
 /*
 Search for an Group ID override.
@@ -26355,6 +26565,7 @@ func (t *IdoverridegroupFindResult) String() string {
   }
   return fmt.Sprintf("IdoverridegroupFindResult%v", string(b))
 }
+
 
 /*
 Modify an Group ID override.
@@ -26530,6 +26741,7 @@ func (t *IdoverridegroupModResult) String() string {
   return fmt.Sprintf("IdoverridegroupModResult%v", string(b))
 }
 
+
 /*
 Display information about an Group ID override.
 */
@@ -26658,6 +26870,7 @@ func (t *IdoverridegroupShowResult) String() string {
   }
   return fmt.Sprintf("IdoverridegroupShowResult%v", string(b))
 }
+
 
 /*
 Add a new User ID override.
@@ -26856,6 +27069,7 @@ func (t *IdoverrideuserAddResult) String() string {
   return fmt.Sprintf("IdoverrideuserAddResult%v", string(b))
 }
 
+
 /*
 Add one or more certificates to the idoverrideuser entry
 */
@@ -26985,6 +27199,7 @@ func (t *IdoverrideuserAddCertResult) String() string {
   return fmt.Sprintf("IdoverrideuserAddCertResult%v", string(b))
 }
 
+
 /*
 Delete an User ID override.
 */
@@ -27101,6 +27316,7 @@ func (t *IdoverrideuserDelResult) String() string {
   }
   return fmt.Sprintf("IdoverrideuserDelResult%v", string(b))
 }
+
 
 /*
 Search for an User ID override.
@@ -27297,6 +27513,7 @@ func (t *IdoverrideuserFindResult) String() string {
   }
   return fmt.Sprintf("IdoverrideuserFindResult%v", string(b))
 }
+
 
 /*
 Modify an User ID override.
@@ -27514,6 +27731,7 @@ func (t *IdoverrideuserModResult) String() string {
   return fmt.Sprintf("IdoverrideuserModResult%v", string(b))
 }
 
+
 /*
 Remove one or more certificates to the idoverrideuser entry
 */
@@ -27643,6 +27861,7 @@ func (t *IdoverrideuserRemoveCertResult) String() string {
   return fmt.Sprintf("IdoverrideuserRemoveCertResult%v", string(b))
 }
 
+
 /*
 Display information about an User ID override.
 */
@@ -27771,6 +27990,7 @@ func (t *IdoverrideuserShowResult) String() string {
   }
   return fmt.Sprintf("IdoverrideuserShowResult%v", string(b))
 }
+
 
 /*
 Add new ID range.
@@ -27969,6 +28189,7 @@ func (t *IdrangeAddResult) String() string {
   return fmt.Sprintf("IdrangeAddResult%v", string(b))
 }
 
+
 /*
 Delete an ID range.
 */
@@ -28073,6 +28294,7 @@ func (t *IdrangeDelResult) String() string {
   }
   return fmt.Sprintf("IdrangeDelResult%v", string(b))
 }
+
 
 /*
 Search for ranges.
@@ -28245,6 +28467,7 @@ func (t *IdrangeFindResult) String() string {
   }
   return fmt.Sprintf("IdrangeFindResult%v", string(b))
 }
+
 
 /*
 Modify ID range.
@@ -28433,6 +28656,7 @@ func (t *IdrangeModResult) String() string {
   return fmt.Sprintf("IdrangeModResult%v", string(b))
 }
 
+
 /*
 Display information about a range.
 */
@@ -28549,6 +28773,7 @@ func (t *IdrangeShowResult) String() string {
   }
   return fmt.Sprintf("IdrangeShowResult%v", string(b))
 }
+
 
 /*
 Add a new ID View.
@@ -28681,6 +28906,7 @@ func (t *IdviewAddResult) String() string {
   return fmt.Sprintf("IdviewAddResult%v", string(b))
 }
 
+
 /*
 Applies ID View to specified hosts or current members of specified hostgroups. If any other ID View is applied to the host, it is overridden.
 */
@@ -28798,6 +29024,7 @@ func (t *IdviewApplyResult) String() string {
   return fmt.Sprintf("IdviewApplyResult%v", string(b))
 }
 
+
 /*
 Delete an ID View.
 */
@@ -28902,6 +29129,7 @@ func (t *IdviewDelResult) String() string {
   }
   return fmt.Sprintf("IdviewDelResult%v", string(b))
 }
+
 
 /*
 Search for an ID View.
@@ -29044,6 +29272,7 @@ func (t *IdviewFindResult) String() string {
   }
   return fmt.Sprintf("IdviewFindResult%v", string(b))
 }
+
 
 /*
 Modify an ID View.
@@ -29195,6 +29424,7 @@ func (t *IdviewModResult) String() string {
   return fmt.Sprintf("IdviewModResult%v", string(b))
 }
 
+
 /*
 Display information about an ID View.
 */
@@ -29318,6 +29548,7 @@ func (t *IdviewShowResult) String() string {
   return fmt.Sprintf("IdviewShowResult%v", string(b))
 }
 
+
 /*
 Clears ID View from specified hosts or current members of specified hostgroups.
 */
@@ -29429,6 +29660,7 @@ func (t *IdviewUnapplyResult) String() string {
   return fmt.Sprintf("IdviewUnapplyResult%v", string(b))
 }
 
+
 /*
 Join an IPA domain
 */
@@ -29527,6 +29759,7 @@ func (t *JoinResult) String() string {
   }
   return fmt.Sprintf("JoinResult%v", string(b))
 }
+
 
 /*
 Export plugin meta-data for the webUI.
@@ -29641,6 +29874,7 @@ func (t *JSONMetadataResult) String() string {
   return fmt.Sprintf("JSONMetadataResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -29733,6 +29967,7 @@ func (t *KraIsEnabledResult) String() string {
   }
   return fmt.Sprintf("KraIsEnabledResult%v", string(b))
 }
+
 
 /*
 Modify Kerberos ticket policy.
@@ -29879,6 +30114,7 @@ func (t *KrbtpolicyModResult) String() string {
   return fmt.Sprintf("KrbtpolicyModResult%v", string(b))
 }
 
+
 /*
 Reset Kerberos ticket policy to the default values.
 */
@@ -29984,6 +30220,7 @@ func (t *KrbtpolicyResetResult) String() string {
   }
   return fmt.Sprintf("KrbtpolicyResetResult%v", string(b))
 }
+
 
 /*
 Display the current Kerberos ticket policy.
@@ -30097,6 +30334,7 @@ func (t *KrbtpolicyShowResult) String() string {
   return fmt.Sprintf("KrbtpolicyShowResult%v", string(b))
 }
 
+
 /*
 Add a new IPA location.
 */
@@ -30141,7 +30379,7 @@ type LocationAddArgs struct {
 Location name
 IPA location name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   }
 
 type LocationAddOptionalArgs struct {
@@ -30214,7 +30452,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *LocationAddResult) String() string {
@@ -30227,6 +30465,7 @@ func (t *LocationAddResult) String() string {
   }
   return fmt.Sprintf("LocationAddResult%v", string(b))
 }
+
 
 /*
 Delete an IPA location.
@@ -30272,7 +30511,7 @@ type LocationDelArgs struct {
 Location name
 IPA location name
     */
-    Idnsname []string `json:"idnsname,omitempty"`
+    Idnsname []DNSName `json:"idnsname,omitempty"`
   }
 
 type LocationDelOptionalArgs struct {
@@ -30319,7 +30558,7 @@ List of deletions that failed
 
     (required)
     */
-    Value []string `json:"value,omitempty"`
+    Value []DNSName `json:"value,omitempty"`
   }
 
 func (t *LocationDelResult) String() string {
@@ -30332,6 +30571,7 @@ func (t *LocationDelResult) String() string {
   }
   return fmt.Sprintf("LocationDelResult%v", string(b))
 }
+
 
 /*
 Search for IPA locations.
@@ -30381,7 +30621,7 @@ type LocationFindOptionalArgs struct {
 Location name
 IPA location name
     */
-    Idnsname *string `json:"idnsname,omitempty"`
+    Idnsname *DNSName `json:"idnsname,omitempty"`
   
     /*
 Description
@@ -30475,6 +30715,7 @@ func (t *LocationFindResult) String() string {
   return fmt.Sprintf("LocationFindResult%v", string(b))
 }
 
+
 /*
 Modify information about an IPA location.
 */
@@ -30519,7 +30760,7 @@ type LocationModArgs struct {
 Location name
 IPA location name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   }
 
 type LocationModOptionalArgs struct {
@@ -30605,7 +30846,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   }
 
 func (t *LocationModResult) String() string {
@@ -30618,6 +30859,7 @@ func (t *LocationModResult) String() string {
   }
   return fmt.Sprintf("LocationModResult%v", string(b))
 }
+
 
 /*
 Display information about an IPA location.
@@ -30663,7 +30905,7 @@ type LocationShowArgs struct {
 Location name
 IPA location name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   }
 
 type LocationShowOptionalArgs struct {
@@ -30722,7 +30964,7 @@ User-friendly description of action performed
 The primary_key value of the entry, e.g. 'jdoe' for a user
     (required)
     */
-    Value string `json:"value,omitempty"`
+    Value DNSName `json:"value,omitempty"`
   
     /*
 Servers in location
@@ -30741,6 +30983,7 @@ func (t *LocationShowResult) String() string {
   }
   return fmt.Sprintf("LocationShowResult%v", string(b))
 }
+
 
 /*
 Migrate users and groups from DS to IPA.
@@ -30967,6 +31210,7 @@ func (t *MigrateDsResult) String() string {
   return fmt.Sprintf("MigrateDsResult%v", string(b))
 }
 
+
 /*
 Add a new netgroup.
 */
@@ -31128,6 +31372,7 @@ func (t *NetgroupAddResult) String() string {
   return fmt.Sprintf("NetgroupAddResult%v", string(b))
 }
 
+
 /*
 Add members to a netgroup.
 */
@@ -31275,6 +31520,7 @@ func (t *NetgroupAddMemberResult) String() string {
   return fmt.Sprintf("NetgroupAddMemberResult%v", string(b))
 }
 
+
 /*
 Delete a netgroup.
 */
@@ -31379,6 +31625,7 @@ func (t *NetgroupDelResult) String() string {
   }
   return fmt.Sprintf("NetgroupDelResult%v", string(b))
 }
+
 
 /*
 Search for a netgroup.
@@ -31642,6 +31889,7 @@ func (t *NetgroupFindResult) String() string {
   return fmt.Sprintf("NetgroupFindResult%v", string(b))
 }
 
+
 /*
 Modify a netgroup.
 */
@@ -31816,6 +32064,7 @@ func (t *NetgroupModResult) String() string {
   return fmt.Sprintf("NetgroupModResult%v", string(b))
 }
 
+
 /*
 Remove members from a netgroup.
 */
@@ -31963,6 +32212,7 @@ func (t *NetgroupRemoveMemberResult) String() string {
   return fmt.Sprintf("NetgroupRemoveMemberResult%v", string(b))
 }
 
+
 /*
 Display information about a netgroup.
 */
@@ -32085,6 +32335,7 @@ func (t *NetgroupShowResult) String() string {
   }
   return fmt.Sprintf("NetgroupShowResult%v", string(b))
 }
+
 
 /*
 Modify OTP configuration options.
@@ -32242,6 +32493,7 @@ func (t *OtpconfigModResult) String() string {
   return fmt.Sprintf("OtpconfigModResult%v", string(b))
 }
 
+
 /*
 Show the current OTP configuration.
 */
@@ -32352,6 +32604,7 @@ func (t *OtpconfigShowResult) String() string {
   }
   return fmt.Sprintf("OtpconfigShowResult%v", string(b))
 }
+
 
 /*
 Add a new OTP token.
@@ -32581,6 +32834,7 @@ func (t *OtptokenAddResult) String() string {
   return fmt.Sprintf("OtptokenAddResult%v", string(b))
 }
 
+
 /*
 Add users that can manage this token.
 */
@@ -32704,6 +32958,7 @@ func (t *OtptokenAddManagedbyResult) String() string {
   return fmt.Sprintf("OtptokenAddManagedbyResult%v", string(b))
 }
 
+
 /*
 Delete an OTP token.
 */
@@ -32808,6 +33063,7 @@ func (t *OtptokenDelResult) String() string {
   }
   return fmt.Sprintf("OtptokenDelResult%v", string(b))
 }
+
 
 /*
 Search for OTP token.
@@ -33035,6 +33291,7 @@ func (t *OtptokenFindResult) String() string {
   return fmt.Sprintf("OtptokenFindResult%v", string(b))
 }
 
+
 /*
 Modify a OTP token.
 */
@@ -33233,6 +33490,7 @@ func (t *OtptokenModResult) String() string {
   return fmt.Sprintf("OtptokenModResult%v", string(b))
 }
 
+
 /*
 Remove users that can manage this token.
 */
@@ -33356,6 +33614,7 @@ func (t *OtptokenRemoveManagedbyResult) String() string {
   return fmt.Sprintf("OtptokenRemoveManagedbyResult%v", string(b))
 }
 
+
 /*
 Display information about an OTP token.
 */
@@ -33478,6 +33737,7 @@ func (t *OtptokenShowResult) String() string {
   }
   return fmt.Sprintf("OtptokenShowResult%v", string(b))
 }
+
 
 /*
 Search for command outputs.
@@ -33603,6 +33863,7 @@ func (t *OutputFindResult) String() string {
   return fmt.Sprintf("OutputFindResult%v", string(b))
 }
 
+
 /*
 Display information about a command output.
 */
@@ -33719,6 +33980,7 @@ func (t *OutputShowResult) String() string {
   }
   return fmt.Sprintf("OutputShowResult%v", string(b))
 }
+
 
 /*
 Search command parameters.
@@ -33844,6 +34106,7 @@ func (t *ParamFindResult) String() string {
   return fmt.Sprintf("ParamFindResult%v", string(b))
 }
 
+
 /*
 Display information about a command parameter.
 */
@@ -33961,6 +34224,7 @@ func (t *ParamShowResult) String() string {
   return fmt.Sprintf("ParamShowResult%v", string(b))
 }
 
+
 /*
 Set a user's password.
 */
@@ -34077,6 +34341,7 @@ func (t *PasswdResult) String() string {
   }
   return fmt.Sprintf("PasswdResult%v", string(b))
 }
+
 
 /*
 Add a new permission.
@@ -34299,6 +34564,7 @@ func (t *PermissionAddResult) String() string {
   return fmt.Sprintf("PermissionAddResult%v", string(b))
 }
 
+
 /*
 Add members to a permission.
 */
@@ -34421,6 +34687,7 @@ func (t *PermissionAddMemberResult) String() string {
   }
   return fmt.Sprintf("PermissionAddMemberResult%v", string(b))
 }
+
 
 /*
 Add a system permission without an ACI (internal command)
@@ -34545,6 +34812,7 @@ func (t *PermissionAddNoaciResult) String() string {
   return fmt.Sprintf("PermissionAddNoaciResult%v", string(b))
 }
 
+
 /*
 Delete a permission.
 */
@@ -34655,6 +34923,7 @@ func (t *PermissionDelResult) String() string {
   }
   return fmt.Sprintf("PermissionDelResult%v", string(b))
 }
+
 
 /*
 Search for permissions.
@@ -34905,6 +35174,7 @@ func (t *PermissionFindResult) String() string {
   }
   return fmt.Sprintf("PermissionFindResult%v", string(b))
 }
+
 
 /*
 Modify a permission.
@@ -35158,6 +35428,7 @@ func (t *PermissionModResult) String() string {
   return fmt.Sprintf("PermissionModResult%v", string(b))
 }
 
+
 /*
 Remove members from a permission.
 */
@@ -35280,6 +35551,7 @@ func (t *PermissionRemoveMemberResult) String() string {
   }
   return fmt.Sprintf("PermissionRemoveMemberResult%v", string(b))
 }
+
 
 /*
 Display information about a permission.
@@ -35404,6 +35676,7 @@ func (t *PermissionShowResult) String() string {
   return fmt.Sprintf("PermissionShowResult%v", string(b))
 }
 
+
 /*
 Ping a remote server.
 */
@@ -35484,6 +35757,7 @@ func (t *PingResult) String() string {
   }
   return fmt.Sprintf("PingResult%v", string(b))
 }
+
 
 /*
 Enable or Disable Anonymous PKINIT.
@@ -35571,6 +35845,7 @@ func (t *PkinitAnonymousResult) String() string {
   }
   return fmt.Sprintf("PkinitAnonymousResult%v", string(b))
 }
+
 
 /*
 Show all loaded plugins.
@@ -35676,6 +35951,7 @@ func (t *PluginsResult) String() string {
   }
   return fmt.Sprintf("PluginsResult%v", string(b))
 }
+
 
 /*
 Add a new privilege.
@@ -35814,6 +36090,7 @@ func (t *PrivilegeAddResult) String() string {
   return fmt.Sprintf("PrivilegeAddResult%v", string(b))
 }
 
+
 /*
 Add members to a privilege.
 */
@@ -35936,6 +36213,7 @@ func (t *PrivilegeAddMemberResult) String() string {
   }
   return fmt.Sprintf("PrivilegeAddMemberResult%v", string(b))
 }
+
 
 /*
 Add permissions to a privilege.
@@ -36060,6 +36338,7 @@ func (t *PrivilegeAddPermissionResult) String() string {
   return fmt.Sprintf("PrivilegeAddPermissionResult%v", string(b))
 }
 
+
 /*
 Delete a privilege.
 */
@@ -36164,6 +36443,7 @@ func (t *PrivilegeDelResult) String() string {
   }
   return fmt.Sprintf("PrivilegeDelResult%v", string(b))
 }
+
 
 /*
 Search for privileges.
@@ -36312,6 +36592,7 @@ func (t *PrivilegeFindResult) String() string {
   }
   return fmt.Sprintf("PrivilegeFindResult%v", string(b))
 }
+
 
 /*
 Modify a privilege.
@@ -36469,6 +36750,7 @@ func (t *PrivilegeModResult) String() string {
   return fmt.Sprintf("PrivilegeModResult%v", string(b))
 }
 
+
 /*
 Remove members from a privilege
 */
@@ -36591,6 +36873,7 @@ func (t *PrivilegeRemoveMemberResult) String() string {
   }
   return fmt.Sprintf("PrivilegeRemoveMemberResult%v", string(b))
 }
+
 
 /*
 Remove permissions from a privilege.
@@ -36715,6 +36998,7 @@ func (t *PrivilegeRemovePermissionResult) String() string {
   return fmt.Sprintf("PrivilegeRemovePermissionResult%v", string(b))
 }
 
+
 /*
 Display information about a privilege.
 */
@@ -36837,6 +37121,7 @@ func (t *PrivilegeShowResult) String() string {
   }
   return fmt.Sprintf("PrivilegeShowResult%v", string(b))
 }
+
 
 /*
 Add a new group password policy.
@@ -37017,6 +37302,7 @@ func (t *PwpolicyAddResult) String() string {
   return fmt.Sprintf("PwpolicyAddResult%v", string(b))
 }
 
+
 /*
 Delete a group password policy.
 */
@@ -37121,6 +37407,7 @@ func (t *PwpolicyDelResult) String() string {
   }
   return fmt.Sprintf("PwpolicyDelResult%v", string(b))
 }
+
 
 /*
 Search for group password policies.
@@ -37312,6 +37599,7 @@ func (t *PwpolicyFindResult) String() string {
   return fmt.Sprintf("PwpolicyFindResult%v", string(b))
 }
 
+
 /*
 Modify a group password policy.
 */
@@ -37499,6 +37787,7 @@ func (t *PwpolicyModResult) String() string {
   return fmt.Sprintf("PwpolicyModResult%v", string(b))
 }
 
+
 /*
 Display information about password policy.
 */
@@ -37616,6 +37905,7 @@ func (t *PwpolicyShowResult) String() string {
   }
   return fmt.Sprintf("PwpolicyShowResult%v", string(b))
 }
+
 
 /*
 Add a new RADIUS proxy server.
@@ -37778,6 +38068,7 @@ func (t *RadiusproxyAddResult) String() string {
   return fmt.Sprintf("RadiusproxyAddResult%v", string(b))
 }
 
+
 /*
 Delete a RADIUS proxy server.
 */
@@ -37882,6 +38173,7 @@ func (t *RadiusproxyDelResult) String() string {
   }
   return fmt.Sprintf("RadiusproxyDelResult%v", string(b))
 }
+
 
 /*
 Search for RADIUS proxy servers.
@@ -38054,6 +38346,7 @@ func (t *RadiusproxyFindResult) String() string {
   }
   return fmt.Sprintf("RadiusproxyFindResult%v", string(b))
 }
+
 
 /*
 Modify a RADIUS proxy server.
@@ -38235,6 +38528,7 @@ func (t *RadiusproxyModResult) String() string {
   return fmt.Sprintf("RadiusproxyModResult%v", string(b))
 }
 
+
 /*
 Display information about a RADIUS proxy server.
 */
@@ -38351,6 +38645,7 @@ func (t *RadiusproxyShowResult) String() string {
   }
   return fmt.Sprintf("RadiusproxyShowResult%v", string(b))
 }
+
 
 /*
 Modify realm domains.
@@ -38508,6 +38803,7 @@ func (t *RealmdomainsModResult) String() string {
   return fmt.Sprintf("RealmdomainsModResult%v", string(b))
 }
 
+
 /*
 Display the list of realm domains.
 */
@@ -38618,6 +38914,7 @@ func (t *RealmdomainsShowResult) String() string {
   }
   return fmt.Sprintf("RealmdomainsShowResult%v", string(b))
 }
+
 
 /*
 Add a new role.
@@ -38755,6 +39052,7 @@ func (t *RoleAddResult) String() string {
   }
   return fmt.Sprintf("RoleAddResult%v", string(b))
 }
+
 
 /*
 Add members to a role.
@@ -38903,6 +39201,7 @@ func (t *RoleAddMemberResult) String() string {
   return fmt.Sprintf("RoleAddMemberResult%v", string(b))
 }
 
+
 /*
 Add privileges to a role.
 */
@@ -39026,6 +39325,7 @@ func (t *RoleAddPrivilegeResult) String() string {
   return fmt.Sprintf("RoleAddPrivilegeResult%v", string(b))
 }
 
+
 /*
 Delete a role.
 */
@@ -39130,6 +39430,7 @@ func (t *RoleDelResult) String() string {
   }
   return fmt.Sprintf("RoleDelResult%v", string(b))
 }
+
 
 /*
 Search for roles.
@@ -39278,6 +39579,7 @@ func (t *RoleFindResult) String() string {
   }
   return fmt.Sprintf("RoleFindResult%v", string(b))
 }
+
 
 /*
 Modify a role.
@@ -39435,6 +39737,7 @@ func (t *RoleModResult) String() string {
   return fmt.Sprintf("RoleModResult%v", string(b))
 }
 
+
 /*
 Remove members from a role.
 */
@@ -39582,6 +39885,7 @@ func (t *RoleRemoveMemberResult) String() string {
   return fmt.Sprintf("RoleRemoveMemberResult%v", string(b))
 }
 
+
 /*
 Remove privileges from a role.
 */
@@ -39704,6 +40008,7 @@ func (t *RoleRemovePrivilegeResult) String() string {
   }
   return fmt.Sprintf("RoleRemovePrivilegeResult%v", string(b))
 }
+
 
 /*
 Display information about a role.
@@ -39828,6 +40133,7 @@ func (t *RoleShowResult) String() string {
   return fmt.Sprintf("RoleShowResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -39914,6 +40220,7 @@ func (t *SchemaResult) String() string {
   }
   return fmt.Sprintf("SchemaResult%v", string(b))
 }
+
 
 /*
 Add a new self-service permission.
@@ -40038,6 +40345,7 @@ func (t *SelfserviceAddResult) String() string {
   return fmt.Sprintf("SelfserviceAddResult%v", string(b))
 }
 
+
 /*
 Delete a self-service permission.
 */
@@ -40136,6 +40444,7 @@ func (t *SelfserviceDelResult) String() string {
   }
   return fmt.Sprintf("SelfserviceDelResult%v", string(b))
 }
+
 
 /*
 Search for a self-service permission.
@@ -40273,6 +40582,7 @@ func (t *SelfserviceFindResult) String() string {
   return fmt.Sprintf("SelfserviceFindResult%v", string(b))
 }
 
+
 /*
 Modify a self-service permission.
 */
@@ -40396,6 +40706,7 @@ func (t *SelfserviceModResult) String() string {
   return fmt.Sprintf("SelfserviceModResult%v", string(b))
 }
 
+
 /*
 Display information about a self-service permission.
 */
@@ -40506,6 +40817,7 @@ func (t *SelfserviceShowResult) String() string {
   }
   return fmt.Sprintf("SelfserviceShowResult%v", string(b))
 }
+
 
 /*
 Create a new SELinux User Map.
@@ -40674,6 +40986,7 @@ func (t *SelinuxusermapAddResult) String() string {
   return fmt.Sprintf("SelinuxusermapAddResult%v", string(b))
 }
 
+
 /*
 Add target hosts and hostgroups to an SELinux User Map rule.
 */
@@ -40802,6 +41115,7 @@ func (t *SelinuxusermapAddHostResult) String() string {
   }
   return fmt.Sprintf("SelinuxusermapAddHostResult%v", string(b))
 }
+
 
 /*
 Add users and groups to an SELinux User Map rule.
@@ -40932,6 +41246,7 @@ func (t *SelinuxusermapAddUserResult) String() string {
   return fmt.Sprintf("SelinuxusermapAddUserResult%v", string(b))
 }
 
+
 /*
 Delete a SELinux User Map.
 */
@@ -41037,6 +41352,7 @@ func (t *SelinuxusermapDelResult) String() string {
   return fmt.Sprintf("SelinuxusermapDelResult%v", string(b))
 }
 
+
 /*
 Disable an SELinux User Map rule.
 */
@@ -41136,6 +41452,7 @@ func (t *SelinuxusermapDisableResult) String() string {
   return fmt.Sprintf("SelinuxusermapDisableResult%v", string(b))
 }
 
+
 /*
 Enable an SELinux User Map rule.
 */
@@ -41234,6 +41551,7 @@ func (t *SelinuxusermapEnableResult) String() string {
   }
   return fmt.Sprintf("SelinuxusermapEnableResult%v", string(b))
 }
+
 
 /*
 Search for SELinux User Maps.
@@ -41412,6 +41730,7 @@ func (t *SelinuxusermapFindResult) String() string {
   }
   return fmt.Sprintf("SelinuxusermapFindResult%v", string(b))
 }
+
 
 /*
 Modify a SELinux User Map.
@@ -41593,6 +41912,7 @@ func (t *SelinuxusermapModResult) String() string {
   return fmt.Sprintf("SelinuxusermapModResult%v", string(b))
 }
 
+
 /*
 Remove target hosts and hostgroups from an SELinux User Map rule.
 */
@@ -41721,6 +42041,7 @@ func (t *SelinuxusermapRemoveHostResult) String() string {
   }
   return fmt.Sprintf("SelinuxusermapRemoveHostResult%v", string(b))
 }
+
 
 /*
 Remove users and groups from an SELinux User Map rule.
@@ -41851,6 +42172,7 @@ func (t *SelinuxusermapRemoveUserResult) String() string {
   return fmt.Sprintf("SelinuxusermapRemoveUserResult%v", string(b))
 }
 
+
 /*
 Display the properties of a SELinux User Map rule.
 */
@@ -41974,6 +42296,7 @@ func (t *SelinuxusermapShowResult) String() string {
   return fmt.Sprintf("SelinuxusermapShowResult%v", string(b))
 }
 
+
 /*
 Check connection to remote IPA server.
 */
@@ -42078,6 +42401,7 @@ func (t *ServerConncheckResult) String() string {
   }
   return fmt.Sprintf("ServerConncheckResult%v", string(b))
 }
+
 
 /*
 Delete IPA server.
@@ -42202,6 +42526,7 @@ func (t *ServerDelResult) String() string {
   return fmt.Sprintf("ServerDelResult%v", string(b))
 }
 
+
 /*
 Search for IPA servers.
 */
@@ -42316,13 +42641,13 @@ Search for servers without these managed suffixes.
 location
 Search for servers with these ipa locations.
     */
-    InLocation *[]string `json:"in_location,omitempty"`
+    InLocation *[]DNSName `json:"in_location,omitempty"`
   
     /*
 location
 Search for servers without these ipa locations.
     */
-    NotInLocation *[]string `json:"not_in_location,omitempty"`
+    NotInLocation *[]DNSName `json:"not_in_location,omitempty"`
   
     /*
 role
@@ -42386,6 +42711,7 @@ func (t *ServerFindResult) String() string {
   return fmt.Sprintf("ServerFindResult%v", string(b))
 }
 
+
 /*
 Modify information about an IPA server.
 */
@@ -42439,7 +42765,7 @@ type ServerModOptionalArgs struct {
 Location
 Server location
     */
-    IpalocationLocation *string `json:"ipalocation_location,omitempty"`
+    IpalocationLocation *DNSName `json:"ipalocation_location,omitempty"`
   
     /*
 Service weight
@@ -42541,6 +42867,7 @@ func (t *ServerModResult) String() string {
   }
   return fmt.Sprintf("ServerModResult%v", string(b))
 }
+
 
 /*
 Find a server role on a server(s)
@@ -42684,6 +43011,7 @@ func (t *ServerRoleFindResult) String() string {
   return fmt.Sprintf("ServerRoleFindResult%v", string(b))
 }
 
+
 /*
 Show role status on a server
 */
@@ -42800,6 +43128,7 @@ func (t *ServerRoleShowResult) String() string {
   }
   return fmt.Sprintf("ServerRoleShowResult%v", string(b))
 }
+
 
 /*
 Show IPA server.
@@ -42923,6 +43252,7 @@ func (t *ServerShowResult) String() string {
   }
   return fmt.Sprintf("ServerShowResult%v", string(b))
 }
+
 
 /*
 Add a new IPA service.
@@ -43097,6 +43427,7 @@ func (t *ServiceAddResult) String() string {
   return fmt.Sprintf("ServiceAddResult%v", string(b))
 }
 
+
 /*
 Add new certificates to a service
 */
@@ -43219,6 +43550,7 @@ func (t *ServiceAddCertResult) String() string {
   }
   return fmt.Sprintf("ServiceAddCertResult%v", string(b))
 }
+
 
 /*
 Add hosts that can manage this service.
@@ -43343,6 +43675,7 @@ func (t *ServiceAddHostResult) String() string {
   return fmt.Sprintf("ServiceAddHostResult%v", string(b))
 }
 
+
 /*
 Add new principal alias to a service
 */
@@ -43465,6 +43798,7 @@ func (t *ServiceAddPrincipalResult) String() string {
   }
   return fmt.Sprintf("ServiceAddPrincipalResult%v", string(b))
 }
+
 
 /*
 Allow users, groups, hosts or host groups to create a keytab of this service.
@@ -43607,6 +43941,7 @@ func (t *ServiceAllowCreateKeytabResult) String() string {
   return fmt.Sprintf("ServiceAllowCreateKeytabResult%v", string(b))
 }
 
+
 /*
 Allow users, groups, hosts or host groups to retrieve a keytab of this service.
 */
@@ -43748,6 +44083,7 @@ func (t *ServiceAllowRetrieveKeytabResult) String() string {
   return fmt.Sprintf("ServiceAllowRetrieveKeytabResult%v", string(b))
 }
 
+
 /*
 Delete an IPA service.
 */
@@ -43853,6 +44189,7 @@ func (t *ServiceDelResult) String() string {
   return fmt.Sprintf("ServiceDelResult%v", string(b))
 }
 
+
 /*
 Disable the Kerberos key and SSL certificate of a service.
 */
@@ -43951,6 +44288,7 @@ func (t *ServiceDisableResult) String() string {
   }
   return fmt.Sprintf("ServiceDisableResult%v", string(b))
 }
+
 
 /*
 Disallow users, groups, hosts or host groups to create a keytab of this service.
@@ -44093,6 +44431,7 @@ func (t *ServiceDisallowCreateKeytabResult) String() string {
   return fmt.Sprintf("ServiceDisallowCreateKeytabResult%v", string(b))
 }
 
+
 /*
 Disallow users, groups, hosts or host groups to retrieve a keytab of this service.
 */
@@ -44233,6 +44572,7 @@ func (t *ServiceDisallowRetrieveKeytabResult) String() string {
   }
   return fmt.Sprintf("ServiceDisallowRetrieveKeytabResult%v", string(b))
 }
+
 
 /*
 Search for IPA services.
@@ -44405,6 +44745,7 @@ func (t *ServiceFindResult) String() string {
   }
   return fmt.Sprintf("ServiceFindResult%v", string(b))
 }
+
 
 /*
 Modify an existing IPA service.
@@ -44592,6 +44933,7 @@ func (t *ServiceModResult) String() string {
   return fmt.Sprintf("ServiceModResult%v", string(b))
 }
 
+
 /*
 Remove certificates from a service
 */
@@ -44714,6 +45056,7 @@ func (t *ServiceRemoveCertResult) String() string {
   }
   return fmt.Sprintf("ServiceRemoveCertResult%v", string(b))
 }
+
 
 /*
 Remove hosts that can manage this service.
@@ -44838,6 +45181,7 @@ func (t *ServiceRemoveHostResult) String() string {
   return fmt.Sprintf("ServiceRemoveHostResult%v", string(b))
 }
 
+
 /*
 Remove principal alias from a service
 */
@@ -44960,6 +45304,7 @@ func (t *ServiceRemovePrincipalResult) String() string {
   }
   return fmt.Sprintf("ServiceRemovePrincipalResult%v", string(b))
 }
+
 
 /*
 Display information about an IPA service.
@@ -45089,6 +45434,7 @@ func (t *ServiceShowResult) String() string {
   }
   return fmt.Sprintf("ServiceShowResult%v", string(b))
 }
+
 
 /*
 Create a new service delegation rule.
@@ -45221,6 +45567,7 @@ func (t *ServicedelegationruleAddResult) String() string {
   return fmt.Sprintf("ServicedelegationruleAddResult%v", string(b))
 }
 
+
 /*
 Add member to a named service delegation rule.
 */
@@ -45343,6 +45690,7 @@ func (t *ServicedelegationruleAddMemberResult) String() string {
   }
   return fmt.Sprintf("ServicedelegationruleAddMemberResult%v", string(b))
 }
+
 
 /*
 Add target to a named service delegation rule.
@@ -45467,6 +45815,7 @@ func (t *ServicedelegationruleAddTargetResult) String() string {
   return fmt.Sprintf("ServicedelegationruleAddTargetResult%v", string(b))
 }
 
+
 /*
 Delete service delegation.
 */
@@ -45571,6 +45920,7 @@ func (t *ServicedelegationruleDelResult) String() string {
   }
   return fmt.Sprintf("ServicedelegationruleDelResult%v", string(b))
 }
+
 
 /*
 Search for service delegations rule.
@@ -45714,6 +46064,7 @@ func (t *ServicedelegationruleFindResult) String() string {
   return fmt.Sprintf("ServicedelegationruleFindResult%v", string(b))
 }
 
+
 /*
 Remove member from a named service delegation rule.
 */
@@ -45836,6 +46187,7 @@ func (t *ServicedelegationruleRemoveMemberResult) String() string {
   }
   return fmt.Sprintf("ServicedelegationruleRemoveMemberResult%v", string(b))
 }
+
 
 /*
 Remove target from a named service delegation rule.
@@ -45960,6 +46312,7 @@ func (t *ServicedelegationruleRemoveTargetResult) String() string {
   return fmt.Sprintf("ServicedelegationruleRemoveTargetResult%v", string(b))
 }
 
+
 /*
 Display information about a named service delegation rule.
 */
@@ -46082,6 +46435,7 @@ func (t *ServicedelegationruleShowResult) String() string {
   }
   return fmt.Sprintf("ServicedelegationruleShowResult%v", string(b))
 }
+
 
 /*
 Create a new service delegation target.
@@ -46208,6 +46562,7 @@ func (t *ServicedelegationtargetAddResult) String() string {
   return fmt.Sprintf("ServicedelegationtargetAddResult%v", string(b))
 }
 
+
 /*
 Add member to a named service delegation target.
 */
@@ -46325,6 +46680,7 @@ func (t *ServicedelegationtargetAddMemberResult) String() string {
   return fmt.Sprintf("ServicedelegationtargetAddMemberResult%v", string(b))
 }
 
+
 /*
 Delete service delegation target.
 */
@@ -46429,6 +46785,7 @@ func (t *ServicedelegationtargetDelResult) String() string {
   }
   return fmt.Sprintf("ServicedelegationtargetDelResult%v", string(b))
 }
+
 
 /*
 Search for service delegation target.
@@ -46566,6 +46923,7 @@ func (t *ServicedelegationtargetFindResult) String() string {
   return fmt.Sprintf("ServicedelegationtargetFindResult%v", string(b))
 }
 
+
 /*
 Remove member from a named service delegation target.
 */
@@ -46682,6 +47040,7 @@ func (t *ServicedelegationtargetRemoveMemberResult) String() string {
   }
   return fmt.Sprintf("ServicedelegationtargetRemoveMemberResult%v", string(b))
 }
+
 
 /*
 Display information about a named service delegation target.
@@ -46800,6 +47159,7 @@ func (t *ServicedelegationtargetShowResult) String() string {
   return fmt.Sprintf("ServicedelegationtargetShowResult%v", string(b))
 }
 
+
 /*
 RPC command used to log the current user out of their session.
 */
@@ -46881,6 +47241,7 @@ func (t *SessionLogoutResult) String() string {
   return fmt.Sprintf("SessionLogoutResult%v", string(b))
 }
 
+
 /*
 Determine whether ipa-adtrust-install has been run with sidgen task
 */
@@ -46961,6 +47322,7 @@ func (t *SidgenWasRunResult) String() string {
   }
   return fmt.Sprintf("SidgenWasRunResult%v", string(b))
 }
+
 
 /*
 Activate a stage user.
@@ -47078,6 +47440,7 @@ func (t *StageuserActivateResult) String() string {
   }
   return fmt.Sprintf("StageuserActivateResult%v", string(b))
 }
+
 
 /*
 Add a new stage user.
@@ -47438,6 +47801,7 @@ func (t *StageuserAddResult) String() string {
   return fmt.Sprintf("StageuserAddResult%v", string(b))
 }
 
+
 /*
 Add a manager to the stage user entry
 */
@@ -47561,6 +47925,7 @@ func (t *StageuserAddManagerResult) String() string {
   return fmt.Sprintf("StageuserAddManagerResult%v", string(b))
 }
 
+
 /*
 Delete a stage user.
 */
@@ -47665,6 +48030,7 @@ func (t *StageuserDelResult) String() string {
   }
   return fmt.Sprintf("StageuserDelResult%v", string(b))
 }
+
 
 /*
 Search for stage users.
@@ -48078,6 +48444,7 @@ func (t *StageuserFindResult) String() string {
   return fmt.Sprintf("StageuserFindResult%v", string(b))
 }
 
+
 /*
 Modify a stage user.
 */
@@ -48450,6 +48817,7 @@ func (t *StageuserModResult) String() string {
   return fmt.Sprintf("StageuserModResult%v", string(b))
 }
 
+
 /*
 Remove a manager to the stage user entry
 */
@@ -48573,6 +48941,7 @@ func (t *StageuserRemoveManagerResult) String() string {
   return fmt.Sprintf("StageuserRemoveManagerResult%v", string(b))
 }
 
+
 /*
 Display information about a stage user.
 */
@@ -48695,6 +49064,7 @@ func (t *StageuserShowResult) String() string {
   }
   return fmt.Sprintf("StageuserShowResult%v", string(b))
 }
+
 
 /*
 Create new Sudo Command.
@@ -48833,6 +49203,7 @@ func (t *SudocmdAddResult) String() string {
   return fmt.Sprintf("SudocmdAddResult%v", string(b))
 }
 
+
 /*
 Delete Sudo Command.
 */
@@ -48937,6 +49308,7 @@ func (t *SudocmdDelResult) String() string {
   }
   return fmt.Sprintf("SudocmdDelResult%v", string(b))
 }
+
 
 /*
 Search for Sudo Commands.
@@ -49085,6 +49457,7 @@ func (t *SudocmdFindResult) String() string {
   }
   return fmt.Sprintf("SudocmdFindResult%v", string(b))
 }
+
 
 /*
 Modify Sudo Command.
@@ -49236,6 +49609,7 @@ func (t *SudocmdModResult) String() string {
   return fmt.Sprintf("SudocmdModResult%v", string(b))
 }
 
+
 /*
 Display Sudo Command.
 */
@@ -49358,6 +49732,7 @@ func (t *SudocmdShowResult) String() string {
   }
   return fmt.Sprintf("SudocmdShowResult%v", string(b))
 }
+
 
 /*
 Create new Sudo Command Group.
@@ -49496,6 +49871,7 @@ func (t *SudocmdgroupAddResult) String() string {
   return fmt.Sprintf("SudocmdgroupAddResult%v", string(b))
 }
 
+
 /*
 Add members to Sudo Command Group.
 */
@@ -49619,6 +49995,7 @@ func (t *SudocmdgroupAddMemberResult) String() string {
   return fmt.Sprintf("SudocmdgroupAddMemberResult%v", string(b))
 }
 
+
 /*
 Delete Sudo Command Group.
 */
@@ -49723,6 +50100,7 @@ func (t *SudocmdgroupDelResult) String() string {
   }
   return fmt.Sprintf("SudocmdgroupDelResult%v", string(b))
 }
+
 
 /*
 Search for Sudo Command Groups.
@@ -49871,6 +50249,7 @@ func (t *SudocmdgroupFindResult) String() string {
   }
   return fmt.Sprintf("SudocmdgroupFindResult%v", string(b))
 }
+
 
 /*
 Modify Sudo Command Group.
@@ -50022,6 +50401,7 @@ func (t *SudocmdgroupModResult) String() string {
   return fmt.Sprintf("SudocmdgroupModResult%v", string(b))
 }
 
+
 /*
 Remove members from Sudo Command Group.
 */
@@ -50145,6 +50525,7 @@ func (t *SudocmdgroupRemoveMemberResult) String() string {
   return fmt.Sprintf("SudocmdgroupRemoveMemberResult%v", string(b))
 }
 
+
 /*
 Display Sudo Command Group.
 */
@@ -50267,6 +50648,7 @@ func (t *SudocmdgroupShowResult) String() string {
   }
   return fmt.Sprintf("SudocmdgroupShowResult%v", string(b))
 }
+
 
 /*
 Create new Sudo Rule.
@@ -50471,6 +50853,7 @@ func (t *SudoruleAddResult) String() string {
   return fmt.Sprintf("SudoruleAddResult%v", string(b))
 }
 
+
 /*
 Add commands and sudo command groups affected by Sudo Rule.
 */
@@ -50600,6 +50983,7 @@ func (t *SudoruleAddAllowCommandResult) String() string {
   return fmt.Sprintf("SudoruleAddAllowCommandResult%v", string(b))
 }
 
+
 /*
 Add commands and sudo command groups affected by Sudo Rule.
 */
@@ -50728,6 +51112,7 @@ func (t *SudoruleAddDenyCommandResult) String() string {
   }
   return fmt.Sprintf("SudoruleAddDenyCommandResult%v", string(b))
 }
+
 
 /*
 Add hosts and hostgroups affected by Sudo Rule.
@@ -50864,6 +51249,7 @@ func (t *SudoruleAddHostResult) String() string {
   return fmt.Sprintf("SudoruleAddHostResult%v", string(b))
 }
 
+
 /*
 Add an option to the Sudo Rule.
 */
@@ -50987,6 +51373,7 @@ func (t *SudoruleAddOptionResult) String() string {
   return fmt.Sprintf("SudoruleAddOptionResult%v", string(b))
 }
 
+
 /*
 Add group for Sudo to execute as.
 */
@@ -51109,6 +51496,7 @@ func (t *SudoruleAddRunasgroupResult) String() string {
   }
   return fmt.Sprintf("SudoruleAddRunasgroupResult%v", string(b))
 }
+
 
 /*
 Add users and groups for Sudo to execute as.
@@ -51239,6 +51627,7 @@ func (t *SudoruleAddRunasuserResult) String() string {
   return fmt.Sprintf("SudoruleAddRunasuserResult%v", string(b))
 }
 
+
 /*
 Add users and groups affected by Sudo Rule.
 */
@@ -51368,6 +51757,7 @@ func (t *SudoruleAddUserResult) String() string {
   return fmt.Sprintf("SudoruleAddUserResult%v", string(b))
 }
 
+
 /*
 Delete Sudo Rule.
 */
@@ -51473,6 +51863,7 @@ func (t *SudoruleDelResult) String() string {
   return fmt.Sprintf("SudoruleDelResult%v", string(b))
 }
 
+
 /*
 Disable a Sudo Rule.
 */
@@ -51560,6 +51951,7 @@ func (t *SudoruleDisableResult) String() string {
   return fmt.Sprintf("SudoruleDisableResult%v", string(b))
 }
 
+
 /*
 Enable a Sudo Rule.
 */
@@ -51646,6 +52038,7 @@ func (t *SudoruleEnableResult) String() string {
   }
   return fmt.Sprintf("SudoruleEnableResult%v", string(b))
 }
+
 
 /*
 Search for Sudo Rule.
@@ -51860,6 +52253,7 @@ func (t *SudoruleFindResult) String() string {
   }
   return fmt.Sprintf("SudoruleFindResult%v", string(b))
 }
+
 
 /*
 Modify Sudo Rule.
@@ -52077,6 +52471,7 @@ func (t *SudoruleModResult) String() string {
   return fmt.Sprintf("SudoruleModResult%v", string(b))
 }
 
+
 /*
 Remove commands and sudo command groups affected by Sudo Rule.
 */
@@ -52206,6 +52601,7 @@ func (t *SudoruleRemoveAllowCommandResult) String() string {
   return fmt.Sprintf("SudoruleRemoveAllowCommandResult%v", string(b))
 }
 
+
 /*
 Remove commands and sudo command groups affected by Sudo Rule.
 */
@@ -52334,6 +52730,7 @@ func (t *SudoruleRemoveDenyCommandResult) String() string {
   }
   return fmt.Sprintf("SudoruleRemoveDenyCommandResult%v", string(b))
 }
+
 
 /*
 Remove hosts and hostgroups affected by Sudo Rule.
@@ -52470,6 +52867,7 @@ func (t *SudoruleRemoveHostResult) String() string {
   return fmt.Sprintf("SudoruleRemoveHostResult%v", string(b))
 }
 
+
 /*
 Remove an option from Sudo Rule.
 */
@@ -52593,6 +52991,7 @@ func (t *SudoruleRemoveOptionResult) String() string {
   return fmt.Sprintf("SudoruleRemoveOptionResult%v", string(b))
 }
 
+
 /*
 Remove group for Sudo to execute as.
 */
@@ -52715,6 +53114,7 @@ func (t *SudoruleRemoveRunasgroupResult) String() string {
   }
   return fmt.Sprintf("SudoruleRemoveRunasgroupResult%v", string(b))
 }
+
 
 /*
 Remove users and groups for Sudo to execute as.
@@ -52845,6 +53245,7 @@ func (t *SudoruleRemoveRunasuserResult) String() string {
   return fmt.Sprintf("SudoruleRemoveRunasuserResult%v", string(b))
 }
 
+
 /*
 Remove users and groups affected by Sudo Rule.
 */
@@ -52974,6 +53375,7 @@ func (t *SudoruleRemoveUserResult) String() string {
   return fmt.Sprintf("SudoruleRemoveUserResult%v", string(b))
 }
 
+
 /*
 Display Sudo Rule.
 */
@@ -53097,6 +53499,7 @@ func (t *SudoruleShowResult) String() string {
   return fmt.Sprintf("SudoruleShowResult%v", string(b))
 }
 
+
 /*
 Search for help topics.
 */
@@ -53215,6 +53618,7 @@ func (t *TopicFindResult) String() string {
   return fmt.Sprintf("TopicFindResult%v", string(b))
 }
 
+
 /*
 Display information about a help topic.
 */
@@ -53325,6 +53729,7 @@ func (t *TopicShowResult) String() string {
   }
   return fmt.Sprintf("TopicShowResult%v", string(b))
 }
+
 
 /*
 Add a new segment.
@@ -53505,6 +53910,7 @@ func (t *TopologysegmentAddResult) String() string {
   return fmt.Sprintf("TopologysegmentAddResult%v", string(b))
 }
 
+
 /*
 Delete a segment.
 */
@@ -53615,6 +54021,7 @@ func (t *TopologysegmentDelResult) String() string {
   }
   return fmt.Sprintf("TopologysegmentDelResult%v", string(b))
 }
+
 
 /*
 Search for topology segments.
@@ -53806,6 +54213,7 @@ func (t *TopologysegmentFindResult) String() string {
   return fmt.Sprintf("TopologysegmentFindResult%v", string(b))
 }
 
+
 /*
 Modify a segment.
 */
@@ -53980,6 +54388,7 @@ func (t *TopologysegmentModResult) String() string {
   return fmt.Sprintf("TopologysegmentModResult%v", string(b))
 }
 
+
 /*
 Request a full re-initialization of the node retrieving data from the other node.
 */
@@ -54103,6 +54512,7 @@ func (t *TopologysegmentReinitializeResult) String() string {
   return fmt.Sprintf("TopologysegmentReinitializeResult%v", string(b))
 }
 
+
 /*
 Display a segment.
 */
@@ -54225,6 +54635,7 @@ func (t *TopologysegmentShowResult) String() string {
   }
   return fmt.Sprintf("TopologysegmentShowResult%v", string(b))
 }
+
 
 /*
 Add a new topology suffix to be managed.
@@ -54357,6 +54768,7 @@ func (t *TopologysuffixAddResult) String() string {
   return fmt.Sprintf("TopologysuffixAddResult%v", string(b))
 }
 
+
 /*
 Delete a topology suffix.
 */
@@ -54461,6 +54873,7 @@ func (t *TopologysuffixDelResult) String() string {
   }
   return fmt.Sprintf("TopologysuffixDelResult%v", string(b))
 }
+
 
 /*
 Search for topology suffixes.
@@ -54603,6 +55016,7 @@ func (t *TopologysuffixFindResult) String() string {
   }
   return fmt.Sprintf("TopologysuffixFindResult%v", string(b))
 }
+
 
 /*
 Modify a topology suffix.
@@ -54748,6 +55162,7 @@ func (t *TopologysuffixModResult) String() string {
   return fmt.Sprintf("TopologysuffixModResult%v", string(b))
 }
 
+
 /*
 Show managed suffix.
 */
@@ -54865,6 +55280,7 @@ func (t *TopologysuffixShowResult) String() string {
   return fmt.Sprintf("TopologysuffixShowResult%v", string(b))
 }
 
+
 /*
 Verify replication topology for suffix.
 
@@ -54957,6 +55373,7 @@ func (t *TopologysuffixVerifyResult) String() string {
   }
   return fmt.Sprintf("TopologysuffixVerifyResult%v", string(b))
 }
+
 
 /*
 Add new trust to use.
@@ -55153,6 +55570,7 @@ func (t *TrustAddResult) String() string {
   return fmt.Sprintf("TrustAddResult%v", string(b))
 }
 
+
 /*
 Delete a trust.
 */
@@ -55257,6 +55675,7 @@ func (t *TrustDelResult) String() string {
   }
   return fmt.Sprintf("TrustDelResult%v", string(b))
 }
+
 
 /*
 Refresh list of the domains associated with the trust
@@ -55386,6 +55805,7 @@ func (t *TrustFetchDomainsResult) String() string {
   }
   return fmt.Sprintf("TrustFetchDomainsResult%v", string(b))
 }
+
 
 /*
 Search for trusts.
@@ -55547,6 +55967,7 @@ func (t *TrustFindResult) String() string {
   return fmt.Sprintf("TrustFindResult%v", string(b))
 }
 
+
 /*
 Modify a trust (for future use).
 
@@ -55700,6 +56121,7 @@ func (t *TrustModResult) String() string {
   return fmt.Sprintf("TrustModResult%v", string(b))
 }
 
+
 /*
 Resolve security identifiers of users and groups in trusted domains
 */
@@ -55798,6 +56220,7 @@ func (t *TrustResolveResult) String() string {
   }
   return fmt.Sprintf("TrustResolveResult%v", string(b))
 }
+
 
 /*
 Display information about a trust.
@@ -55915,6 +56338,7 @@ func (t *TrustShowResult) String() string {
   }
   return fmt.Sprintf("TrustShowResult%v", string(b))
 }
+
 
 /*
 Modify global trust configuration.
@@ -56060,6 +56484,7 @@ func (t *TrustconfigModResult) String() string {
   return fmt.Sprintf("TrustconfigModResult%v", string(b))
 }
 
+
 /*
 Show global trust configuration.
 */
@@ -56176,6 +56601,7 @@ func (t *TrustconfigShowResult) String() string {
   }
   return fmt.Sprintf("TrustconfigShowResult%v", string(b))
 }
+
 
 /*
 Allow access from the trusted domain
@@ -56326,6 +56752,7 @@ func (t *TrustdomainAddResult) String() string {
   return fmt.Sprintf("TrustdomainAddResult%v", string(b))
 }
 
+
 /*
 Remove information about the domain associated with the trust.
 */
@@ -56437,6 +56864,7 @@ func (t *TrustdomainDelResult) String() string {
   return fmt.Sprintf("TrustdomainDelResult%v", string(b))
 }
 
+
 /*
 Disable use of IPA resources by the domain of the trust
 */
@@ -56542,6 +56970,7 @@ func (t *TrustdomainDisableResult) String() string {
   return fmt.Sprintf("TrustdomainDisableResult%v", string(b))
 }
 
+
 /*
 Allow use of IPA resources by the domain of the trust
 */
@@ -56646,6 +57075,7 @@ func (t *TrustdomainEnableResult) String() string {
   }
   return fmt.Sprintf("TrustdomainEnableResult%v", string(b))
 }
+
 
 /*
 Search domains of the trust
@@ -56800,6 +57230,7 @@ func (t *TrustdomainFindResult) String() string {
   }
   return fmt.Sprintf("TrustdomainFindResult%v", string(b))
 }
+
 
 /*
 Modify trustdomain of the trust
@@ -56962,6 +57393,7 @@ func (t *TrustdomainModResult) String() string {
   }
   return fmt.Sprintf("TrustdomainModResult%v", string(b))
 }
+
 
 /*
 Add a new user.
@@ -57328,6 +57760,7 @@ func (t *UserAddResult) String() string {
   return fmt.Sprintf("UserAddResult%v", string(b))
 }
 
+
 /*
 Add one or more certificates to the user entry
 */
@@ -57450,6 +57883,7 @@ func (t *UserAddCertResult) String() string {
   }
   return fmt.Sprintf("UserAddCertResult%v", string(b))
 }
+
 
 /*
 Add a manager to the user entry
@@ -57574,6 +58008,7 @@ func (t *UserAddManagerResult) String() string {
   return fmt.Sprintf("UserAddManagerResult%v", string(b))
 }
 
+
 /*
 Add new principal alias to the user entry
 */
@@ -57697,6 +58132,7 @@ func (t *UserAddPrincipalResult) String() string {
   return fmt.Sprintf("UserAddPrincipalResult%v", string(b))
 }
 
+
 /*
 Delete a user.
 */
@@ -57808,6 +58244,7 @@ func (t *UserDelResult) String() string {
   return fmt.Sprintf("UserDelResult%v", string(b))
 }
 
+
 /*
 Disable a user account.
 */
@@ -57907,6 +58344,7 @@ func (t *UserDisableResult) String() string {
   return fmt.Sprintf("UserDisableResult%v", string(b))
 }
 
+
 /*
 Enable a user account.
 */
@@ -58005,6 +58443,7 @@ func (t *UserEnableResult) String() string {
   }
   return fmt.Sprintf("UserEnableResult%v", string(b))
 }
+
 
 /*
 Search for users.
@@ -58436,6 +58875,7 @@ func (t *UserFindResult) String() string {
   return fmt.Sprintf("UserFindResult%v", string(b))
 }
 
+
 /*
 Modify a user.
 */
@@ -58814,6 +59254,7 @@ func (t *UserModResult) String() string {
   return fmt.Sprintf("UserModResult%v", string(b))
 }
 
+
 /*
 Remove one or more certificates to the user entry
 */
@@ -58936,6 +59377,7 @@ func (t *UserRemoveCertResult) String() string {
   }
   return fmt.Sprintf("UserRemoveCertResult%v", string(b))
 }
+
 
 /*
 Remove a manager to the user entry
@@ -59060,6 +59502,7 @@ func (t *UserRemoveManagerResult) String() string {
   return fmt.Sprintf("UserRemoveManagerResult%v", string(b))
 }
 
+
 /*
 Remove principal alias from the user entry
 */
@@ -59182,6 +59625,7 @@ func (t *UserRemovePrincipalResult) String() string {
   }
   return fmt.Sprintf("UserRemovePrincipalResult%v", string(b))
 }
+
 
 /*
 Display information about a user.
@@ -59312,6 +59756,7 @@ func (t *UserShowResult) String() string {
   return fmt.Sprintf("UserShowResult%v", string(b))
 }
 
+
 /*
 Move deleted user into staged area
 */
@@ -59416,6 +59861,7 @@ func (t *UserStageResult) String() string {
   }
   return fmt.Sprintf("UserStageResult%v", string(b))
 }
+
 
 /*
 Lockout status of a user account
@@ -59553,6 +59999,7 @@ func (t *UserStatusResult) String() string {
   return fmt.Sprintf("UserStatusResult%v", string(b))
 }
 
+
 /*
 Undelete a delete user account.
 */
@@ -59651,6 +60098,7 @@ func (t *UserUndelResult) String() string {
   }
   return fmt.Sprintf("UserUndelResult%v", string(b))
 }
+
 
 /*
 Unlock a user account
@@ -59755,6 +60203,7 @@ func (t *UserUnlockResult) String() string {
   }
   return fmt.Sprintf("UserUnlockResult%v", string(b))
 }
+
 
 /*
 
@@ -59929,6 +60378,7 @@ func (t *VaultAddInternalResult) String() string {
   return fmt.Sprintf("VaultAddInternalResult%v", string(b))
 }
 
+
 /*
 Add members to a vault.
 */
@@ -60081,6 +60531,7 @@ func (t *VaultAddMemberResult) String() string {
   }
   return fmt.Sprintf("VaultAddMemberResult%v", string(b))
 }
+
 
 /*
 Add owners to a vault.
@@ -60235,6 +60686,7 @@ func (t *VaultAddOwnerResult) String() string {
   return fmt.Sprintf("VaultAddOwnerResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -60382,6 +60834,7 @@ func (t *VaultArchiveInternalResult) String() string {
   return fmt.Sprintf("VaultArchiveInternalResult%v", string(b))
 }
 
+
 /*
 Delete a vault.
 */
@@ -60504,6 +60957,7 @@ func (t *VaultDelResult) String() string {
   }
   return fmt.Sprintf("VaultDelResult%v", string(b))
 }
+
 
 /*
 Search for vaults.
@@ -60688,6 +61142,7 @@ func (t *VaultFindResult) String() string {
   }
   return fmt.Sprintf("VaultFindResult%v", string(b))
 }
+
 
 /*
 
@@ -60875,6 +61330,7 @@ func (t *VaultModInternalResult) String() string {
   return fmt.Sprintf("VaultModInternalResult%v", string(b))
 }
 
+
 /*
 Remove members from a vault.
 */
@@ -61027,6 +61483,7 @@ func (t *VaultRemoveMemberResult) String() string {
   }
   return fmt.Sprintf("VaultRemoveMemberResult%v", string(b))
 }
+
 
 /*
 Remove owners from a vault.
@@ -61181,6 +61638,7 @@ func (t *VaultRemoveOwnerResult) String() string {
   return fmt.Sprintf("VaultRemoveOwnerResult%v", string(b))
 }
 
+
 /*
 
 */
@@ -61315,6 +61773,7 @@ func (t *VaultRetrieveInternalResult) String() string {
   }
   return fmt.Sprintf("VaultRetrieveInternalResult%v", string(b))
 }
+
 
 /*
 Display information about a vault.
@@ -61457,6 +61916,7 @@ func (t *VaultShowResult) String() string {
   return fmt.Sprintf("VaultShowResult%v", string(b))
 }
 
+
 /*
 Show vault configuration.
 */
@@ -61567,6 +62027,7 @@ func (t *VaultconfigShowResult) String() string {
   }
   return fmt.Sprintf("VaultconfigShowResult%v", string(b))
 }
+
 
 /*
 Add owners to a vault container.
@@ -61715,6 +62176,7 @@ func (t *VaultcontainerAddOwnerResult) String() string {
   return fmt.Sprintf("VaultcontainerAddOwnerResult%v", string(b))
 }
 
+
 /*
 Delete a vault container.
 */
@@ -61831,6 +62293,7 @@ func (t *VaultcontainerDelResult) String() string {
   }
   return fmt.Sprintf("VaultcontainerDelResult%v", string(b))
 }
+
 
 /*
 Remove owners from a vault container.
@@ -61979,6 +62442,7 @@ func (t *VaultcontainerRemoveOwnerResult) String() string {
   return fmt.Sprintf("VaultcontainerRemoveOwnerResult%v", string(b))
 }
 
+
 /*
 Display information about a vault container.
 */
@@ -62113,6 +62577,7 @@ func (t *VaultcontainerShowResult) String() string {
   }
   return fmt.Sprintf("VaultcontainerShowResult%v", string(b))
 }
+
 
 
 
@@ -64682,7 +65147,7 @@ Subject email address
 Subject DNS name
 
     */
-    SanDnsname *[]string `json:"san_dnsname,omitempty"`
+    SanDnsname *[]DNSName `json:"san_dnsname,omitempty"`
   
     /*
 Subject X.400 address
@@ -65044,31 +65509,35 @@ func (out *Cert) UnmarshalJSON(data []byte) error {
     raw := in.SanDnsname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -65084,7 +65553,7 @@ func (out *Cert) UnmarshalJSON(data []byte) error {
     }
     
     if plainOk {
-      out.SanDnsname = &[]string{plainV}
+      out.SanDnsname = &[]DNSName{plainV}
     } else if sliceOk {
       
       out.SanDnsname = &sliceV
@@ -66181,7 +66650,7 @@ Subject email address
 Subject DNS name
 
     */
-    SanDnsname *[]string `json:"san_dnsname,omitempty"`
+    SanDnsname *[]DNSName `json:"san_dnsname,omitempty"`
   
     /*
 Subject X.400 address
@@ -66527,31 +66996,35 @@ func (out *Certreq) UnmarshalJSON(data []byte) error {
     raw := in.SanDnsname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -66567,7 +67040,7 @@ func (out *Certreq) UnmarshalJSON(data []byte) error {
     }
     
     if plainOk {
-      out.SanDnsname = &[]string{plainV}
+      out.SanDnsname = &[]DNSName{plainV}
     } else if sliceOk {
       
       out.SanDnsname = &sliceV
@@ -70073,7 +70546,7 @@ Subtype
 Hostname
 
     */
-    Hostname string `json:"hostname,omitempty"`
+    Hostname DNSName `json:"hostname,omitempty"`
   }
 
 func (t *Dnsafsdbrecord) String() string {
@@ -70147,31 +70620,35 @@ func (out *Dnsafsdbrecord) UnmarshalJSON(data []byte) error {
     raw := in.Hostname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -70597,7 +71074,7 @@ type Dnscnamerecord struct {
 Hostname
 A hostname which this alias hostname points to
     */
-    Hostname string `json:"hostname,omitempty"`
+    Hostname DNSName `json:"hostname,omitempty"`
   }
 
 func (t *Dnscnamerecord) String() string {
@@ -70626,31 +71103,35 @@ func (out *Dnscnamerecord) UnmarshalJSON(data []byte) error {
     raw := in.Hostname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -71310,7 +71791,7 @@ type Dnsdnamerecord struct {
 Target
 
     */
-    Target string `json:"target,omitempty"`
+    Target DNSName `json:"target,omitempty"`
   }
 
 func (t *Dnsdnamerecord) String() string {
@@ -71339,31 +71820,35 @@ func (out *Dnsdnamerecord) UnmarshalJSON(data []byte) error {
     raw := in.Target
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -71622,7 +72107,7 @@ type Dnsforwardzone struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   
     /*
 Reverse zone IP network
@@ -71691,31 +72176,35 @@ func (out *Dnsforwardzone) UnmarshalJSON(data []byte) error {
     raw := in.Idnsname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -72048,7 +72537,7 @@ Preference given to this exchanger. Lower values are more preferred
 Exchanger
 A host willing to act as a key exchanger
     */
-    Exchanger string `json:"exchanger,omitempty"`
+    Exchanger DNSName `json:"exchanger,omitempty"`
   }
 
 func (t *Dnskxrecord) String() string {
@@ -72121,31 +72610,35 @@ func (out *Dnskxrecord) UnmarshalJSON(data []byte) error {
     raw := in.Exchanger
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -72789,7 +73282,7 @@ Preference given to this exchanger. Lower values are more preferred
 Exchanger
 A host willing to act as a mail exchanger
     */
-    Exchanger string `json:"exchanger,omitempty"`
+    Exchanger DNSName `json:"exchanger,omitempty"`
   }
 
 func (t *Dnsmxrecord) String() string {
@@ -72862,31 +73355,35 @@ func (out *Dnsmxrecord) UnmarshalJSON(data []byte) error {
     raw := in.Exchanger
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -73258,7 +73755,7 @@ type Dnsnsrecord struct {
 Hostname
 
     */
-    Hostname string `json:"hostname,omitempty"`
+    Hostname DNSName `json:"hostname,omitempty"`
   }
 
 func (t *Dnsnsrecord) String() string {
@@ -73287,31 +73784,35 @@ func (out *Dnsnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.Hostname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -73349,7 +73850,7 @@ type Dnsptrrecord struct {
 Hostname
 The hostname this reverse record points to
     */
-    Hostname string `json:"hostname,omitempty"`
+    Hostname DNSName `json:"hostname,omitempty"`
   }
 
 func (t *Dnsptrrecord) String() string {
@@ -73378,31 +73879,35 @@ func (out *Dnsptrrecord) UnmarshalJSON(data []byte) error {
     raw := in.Hostname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -73440,7 +73945,7 @@ type Dnsrecord struct {
 Record name
 Record name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   
     /*
 Time to live
@@ -73536,7 +74041,7 @@ AFSDB Subtype
 AFSDB Hostname
 
     */
-    AfsdbPartHostname *string `json:"afsdb_part_hostname,omitempty"`
+    AfsdbPartHostname *DNSName `json:"afsdb_part_hostname,omitempty"`
   
     /*
 APL record
@@ -73584,7 +74089,7 @@ Raw CNAME records
 CNAME Hostname
 A hostname which this alias hostname points to
     */
-    CnamePartHostname *string `json:"cname_part_hostname,omitempty"`
+    CnamePartHostname *DNSName `json:"cname_part_hostname,omitempty"`
   
     /*
 DHCID record
@@ -73632,7 +74137,7 @@ Raw DNAME records
 DNAME Target
 
     */
-    DnamePartTarget *string `json:"dname_part_target,omitempty"`
+    DnamePartTarget *DNSName `json:"dname_part_target,omitempty"`
   
     /*
 DS record
@@ -73698,7 +74203,7 @@ Preference given to this exchanger. Lower values are more preferred
 KX Exchanger
 A host willing to act as a key exchanger
     */
-    KxPartExchanger *string `json:"kx_part_exchanger,omitempty"`
+    KxPartExchanger *DNSName `json:"kx_part_exchanger,omitempty"`
   
     /*
 LOC record
@@ -73794,7 +74299,7 @@ Preference given to this exchanger. Lower values are more preferred
 MX Exchanger
 A host willing to act as a mail exchanger
     */
-    MxPartExchanger *string `json:"mx_part_exchanger,omitempty"`
+    MxPartExchanger *DNSName `json:"mx_part_exchanger,omitempty"`
   
     /*
 NAPTR record
@@ -73848,7 +74353,7 @@ Raw NS records
 NS Hostname
 
     */
-    NsPartHostname *string `json:"ns_part_hostname,omitempty"`
+    NsPartHostname *DNSName `json:"ns_part_hostname,omitempty"`
   
     /*
 NSEC record
@@ -73866,7 +74371,7 @@ Raw PTR records
 PTR Hostname
 The hostname this reverse record points to
     */
-    PtrPartHostname *string `json:"ptr_part_hostname,omitempty"`
+    PtrPartHostname *DNSName `json:"ptr_part_hostname,omitempty"`
   
     /*
 RRSIG record
@@ -73920,7 +74425,7 @@ SRV Port
 SRV Target
 The domain name of the target host or '.' if the service is decidedly not available at this domain
     */
-    SrvPartTarget *string `json:"srv_part_target,omitempty"`
+    SrvPartTarget *DNSName `json:"srv_part_target,omitempty"`
   
     /*
 SSHFP record
@@ -74197,31 +74702,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.Idnsname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -74876,31 +75385,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.AfsdbPartHostname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -75205,31 +75718,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.CnamePartHostname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -75534,31 +76051,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.DnamePartTarget
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -75974,31 +76495,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.KxPartExchanger
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -76628,31 +77153,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.MxPartExchanger
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -76997,31 +77526,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.NsPartHostname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -77124,31 +77657,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.PtrPartHostname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -77482,31 +78019,35 @@ func (out *Dnsrecord) UnmarshalJSON(data []byte) error {
     raw := in.SrvPartTarget
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -78035,7 +78576,7 @@ DNS Server name
 SOA mname override
 SOA mname (authoritative server) override
     */
-    Idnssoamname *string `json:"idnssoamname,omitempty"`
+    Idnssoamname *DNSName `json:"idnssoamname,omitempty"`
   
     /*
 Forwarders
@@ -78120,31 +78661,35 @@ func (out *Dnsserver) UnmarshalJSON(data []byte) error {
     raw := in.Idnssoamname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -78324,7 +78869,7 @@ Port
 Target
 The domain name of the target host or '.' if the service is decidedly not available at this domain
     */
-    Target string `json:"target,omitempty"`
+    Target DNSName `json:"target,omitempty"`
   }
 
 func (t *Dnssrvrecord) String() string {
@@ -78485,31 +79030,35 @@ func (out *Dnssrvrecord) UnmarshalJSON(data []byte) error {
     raw := in.Target
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -79010,7 +79559,7 @@ type Dnszone struct {
 Zone name
 Zone name (FQDN)
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   
     /*
 Reverse zone IP network
@@ -79046,13 +79595,13 @@ Managedby permission
 Authoritative nameserver
 Authoritative nameserver domain name
     */
-    Idnssoamname *string `json:"idnssoamname,omitempty"`
+    Idnssoamname *DNSName `json:"idnssoamname,omitempty"`
   
     /*
 Administrator e-mail address
 Administrator e-mail address
     */
-    Idnssoarname string `json:"idnssoarname,omitempty"`
+    Idnssoarname DNSName `json:"idnssoarname,omitempty"`
   
     /*
 SOA serial
@@ -79215,31 +79764,35 @@ func (out *Dnszone) UnmarshalJSON(data []byte) error {
     raw := in.Idnsname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -79487,31 +80040,35 @@ func (out *Dnszone) UnmarshalJSON(data []byte) error {
     raw := in.Idnssoamname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -79546,31 +80103,35 @@ func (out *Dnszone) UnmarshalJSON(data []byte) error {
     raw := in.Idnssoarname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -87038,7 +87599,7 @@ type Location struct {
 Location name
 IPA location name
     */
-    Idnsname string `json:"idnsname,omitempty"`
+    Idnsname DNSName `json:"idnsname,omitempty"`
   
     /*
 Description
@@ -87091,31 +87652,35 @@ func (out *Location) UnmarshalJSON(data []byte) error {
     raw := in.Idnsname
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
@@ -94346,7 +94911,7 @@ Maximum domain level
 Location
 Server location
     */
-    IpalocationLocation *string `json:"ipalocation_location,omitempty"`
+    IpalocationLocation *DNSName `json:"ipalocation_location,omitempty"`
   
     /*
 Service weight
@@ -94599,31 +95164,35 @@ func (out *Server) UnmarshalJSON(data []byte) error {
     raw := in.IpalocationLocation
     
     plainOk := false
-    var plainV string
+    var plainV DNSName
     switch tempV := raw.(type) {
       case string:
-        plainV = tempV
-      case map[string]string:
-        plainV, plainOk = tempV["__dns_name__"]
+        plainV = DNSName(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__dns_name__"].(string)
+        plainV = DNSName(tplainV)
       default:
         break
     }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV []DNSName
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        var itemV string
+        var itemV DNSName
         itemOk := false
         // Handle multiple implementations of the type
         switch tempItemV := rawItem.(type) {
           case string:
-            itemV = tempItemV
+            itemV = DNSName(tempItemV)
             itemOk = true
           case map[string]interface{}:
-            itemV, itemOk = tempItemV["__dns_name__"].(string)
+            var titemV string
+            titemV, itemOk = tempItemV["__dns_name__"].(string)
+            itemV = DNSName(titemV)
           default:
             break
         }
