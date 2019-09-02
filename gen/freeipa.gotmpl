@@ -5,6 +5,7 @@ package freeipa;
 import (
   "time"
 	"encoding/json"
+  "encoding/base64"
   "fmt"
   "reflect"
   "strconv"
@@ -201,6 +202,19 @@ func (out *{{.UpperName}}) UnmarshalJSON(data []byte) error {
       default:
         break
     }
+    {{else if eq "bytes" .Type}}
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     {{else if eq "bool" (ToGoType .Type)}}
     plainOk := false
     var plainV bool
@@ -251,6 +265,21 @@ func (out *{{.UpperName}}) UnmarshalJSON(data []byte) error {
             var titemV string
             titemV, itemOk = tempItemV["__dns_name__"].(string)
             itemV = DNSName(titemV)
+          default:
+            break
+        }
+        {{else if eq "bytes" .Type}}
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
           default:
             break
         }
