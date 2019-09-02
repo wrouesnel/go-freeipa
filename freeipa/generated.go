@@ -5,6 +5,7 @@ package freeipa;
 import (
   "time"
 	"encoding/json"
+  "encoding/base64"
   "fmt"
   "reflect"
   "strconv"
@@ -7922,7 +7923,7 @@ type CertFindOptionalArgs struct {
 Certificate
 Base-64 encoded certificate.
     */
-    Certificate *string `json:"certificate,omitempty"`
+    Certificate *[]byte `json:"certificate,omitempty"`
   
     /*
 Issuer
@@ -22681,7 +22682,7 @@ Generate a random password to be used in bulk enrollment
 Certificate
 Base-64 encoded host certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 MAC address
@@ -22882,7 +22883,7 @@ Host name
 Certificate
 Base-64 encoded host certificate
     */
-    Usercertificate []string `json:"usercertificate,omitempty"`
+    Usercertificate [][]byte `json:"usercertificate,omitempty"`
   }
 
 type HostAddCertOptionalArgs struct {
@@ -24074,7 +24075,7 @@ Password used in bulk enrollment
 Certificate
 Base-64 encoded host certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 MAC address
@@ -24384,7 +24385,7 @@ Generate a random password to be used in bulk enrollment
 Certificate
 Base-64 encoded host certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Principal alias
@@ -24592,7 +24593,7 @@ Host name
 Certificate
 Base-64 encoded host certificate
     */
-    Usercertificate []string `json:"usercertificate,omitempty"`
+    Usercertificate [][]byte `json:"usercertificate,omitempty"`
   }
 
 type HostRemoveCertOptionalArgs struct {
@@ -26985,7 +26986,7 @@ SSH public key
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 
@@ -27126,7 +27127,7 @@ Anchor to override
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate []string `json:"usercertificate,omitempty"`
+    Usercertificate [][]byte `json:"usercertificate,omitempty"`
   }
 
 type IdoverrideuserAddCertOptionalArgs struct {
@@ -27628,7 +27629,7 @@ SSH public key
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 
@@ -27788,7 +27789,7 @@ Anchor to override
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate []string `json:"usercertificate,omitempty"`
+    Usercertificate [][]byte `json:"usercertificate,omitempty"`
   }
 
 type IdoverrideuserRemoveCertOptionalArgs struct {
@@ -32708,7 +32709,7 @@ Token serial (informational only)
 Key
 Token secret (Base32; default: random)
     */
-    Ipatokenotpkey *string `json:"ipatokenotpkey,omitempty"`
+    Ipatokenotpkey *[]byte `json:"ipatokenotpkey,omitempty"`
   
     /*
 Algorithm
@@ -43307,7 +43308,7 @@ type ServiceAddOptionalArgs struct {
 Certificate
 Base-64 encoded service certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 PAC type
@@ -43478,7 +43479,7 @@ Service principal
 Certificate
 Base-64 encoded service certificate
     */
-    Usercertificate []string `json:"usercertificate,omitempty"`
+    Usercertificate [][]byte `json:"usercertificate,omitempty"`
   }
 
 type ServiceAddCertOptionalArgs struct {
@@ -44806,7 +44807,7 @@ Service principal alias
 Certificate
 Base-64 encoded service certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 PAC type
@@ -44984,7 +44985,7 @@ Service principal
 Certificate
 Base-64 encoded service certificate
     */
-    Usercertificate []string `json:"usercertificate,omitempty"`
+    Usercertificate [][]byte `json:"usercertificate,omitempty"`
   }
 
 type ServiceRemoveCertOptionalArgs struct {
@@ -47711,7 +47712,7 @@ Preferred Language
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 
@@ -48290,7 +48291,7 @@ Preferred Language
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Time Limit
@@ -48714,7 +48715,7 @@ Preferred Language
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 
@@ -57664,7 +57665,7 @@ Preferred Language
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Account disabled
@@ -57805,7 +57806,7 @@ type UserAddCertArgs struct {
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate []string `json:"usercertificate,omitempty"`
+    Usercertificate [][]byte `json:"usercertificate,omitempty"`
   }
 
 type UserAddCertOptionalArgs struct {
@@ -58703,7 +58704,7 @@ Preferred Language
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Account disabled
@@ -59145,7 +59146,7 @@ Preferred Language
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Account disabled
@@ -59299,7 +59300,7 @@ type UserRemoveCertArgs struct {
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate []string `json:"usercertificate,omitempty"`
+    Usercertificate [][]byte `json:"usercertificate,omitempty"`
   }
 
 type UserRemoveCertOptionalArgs struct {
@@ -60270,13 +60271,13 @@ Vault type
 Salt
 Vault salt
     */
-    Ipavaultsalt *string `json:"ipavaultsalt,omitempty"`
+    Ipavaultsalt *[]byte `json:"ipavaultsalt,omitempty"`
   
     /*
 Public key
 Vault public key
     */
-    Ipavaultpublickey *string `json:"ipavaultpublickey,omitempty"`
+    Ipavaultpublickey *[]byte `json:"ipavaultpublickey,omitempty"`
   
     /*
 
@@ -60737,19 +60738,19 @@ Vault name
 
 Session key wrapped with transport certificate
     */
-    SessionKey string `json:"session_key,omitempty"`
+    SessionKey []byte `json:"session_key,omitempty"`
   
     /*
 
 Vault data encrypted with session key
     */
-    VaultData string `json:"vault_data,omitempty"`
+    VaultData []byte `json:"vault_data,omitempty"`
   
     /*
 
 Nonce
     */
-    Nonce string `json:"nonce,omitempty"`
+    Nonce []byte `json:"nonce,omitempty"`
   }
 
 type VaultArchiveInternalOptionalArgs struct {
@@ -61209,13 +61210,13 @@ Vault type
 Salt
 Vault salt
     */
-    Ipavaultsalt *string `json:"ipavaultsalt,omitempty"`
+    Ipavaultsalt *[]byte `json:"ipavaultsalt,omitempty"`
   
     /*
 Public key
 Vault public key
     */
-    Ipavaultpublickey *string `json:"ipavaultpublickey,omitempty"`
+    Ipavaultpublickey *[]byte `json:"ipavaultpublickey,omitempty"`
   
     /*
 
@@ -61689,7 +61690,7 @@ Vault name
 
 Session key wrapped with transport certificate
     */
-    SessionKey string `json:"session_key,omitempty"`
+    SessionKey []byte `json:"session_key,omitempty"`
   }
 
 type VaultRetrieveInternalOptionalArgs struct {
@@ -65129,7 +65130,7 @@ Name of issuing CA
 Certificate
 Base-64 encoded certificate.
     */
-    Certificate string `json:"certificate,omitempty"`
+    Certificate []byte `json:"certificate,omitempty"`
   
     /*
 Subject
@@ -65398,15 +65399,39 @@ func (out *Cert) UnmarshalJSON(data []byte) error {
   if true {
     raw := in.Certificate
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -66632,7 +66657,7 @@ Name of issuing CA
 Certificate
 Base-64 encoded certificate.
     */
-    Certificate string `json:"certificate,omitempty"`
+    Certificate []byte `json:"certificate,omitempty"`
   
     /*
 Subject
@@ -66885,15 +66910,39 @@ func (out *Certreq) UnmarshalJSON(data []byte) error {
   if true {
     raw := in.Certificate
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -82898,7 +82947,7 @@ Random password
 Certificate
 Base-64 encoded host certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Subject
@@ -83654,15 +83703,39 @@ func (out *Host) UnmarshalJSON(data []byte) error {
   if in.Usercertificate != nil {
     raw := in.Usercertificate
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -83675,7 +83748,7 @@ func (out *Host) UnmarshalJSON(data []byte) error {
     }
     
     if plainOk {
-      out.Usercertificate = &[]string{plainV}
+      out.Usercertificate = &[][]byte{plainV}
     } else if sliceOk {
       
       out.Usercertificate = &sliceV
@@ -86276,7 +86349,7 @@ SSH public key
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   }
 
 func (t *Idoverrideuser) String() string {
@@ -86716,15 +86789,39 @@ func (out *Idoverrideuser) UnmarshalJSON(data []byte) error {
   if in.Usercertificate != nil {
     raw := in.Usercertificate
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -86737,7 +86834,7 @@ func (out *Idoverrideuser) UnmarshalJSON(data []byte) error {
     }
     
     if plainOk {
-      out.Usercertificate = &[]string{plainV}
+      out.Usercertificate = &[][]byte{plainV}
     } else if sliceOk {
       
       out.Usercertificate = &sliceV
@@ -89166,7 +89263,7 @@ Token serial (informational only)
 Key
 Token secret (Base32; default: random)
     */
-    Ipatokenotpkey *string `json:"ipatokenotpkey,omitempty"`
+    Ipatokenotpkey *[]byte `json:"ipatokenotpkey,omitempty"`
   
     /*
 Algorithm
@@ -89716,15 +89813,39 @@ func (out *Otptoken) UnmarshalJSON(data []byte) error {
   if in.Ipatokenotpkey != nil {
     raw := in.Ipatokenotpkey
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -95522,7 +95643,7 @@ Service principal alias
 Certificate
 Base-64 encoded service certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Subject
@@ -95826,15 +95947,39 @@ func (out *Service) UnmarshalJSON(data []byte) error {
   if in.Usercertificate != nil {
     raw := in.Usercertificate
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -95847,7 +95992,7 @@ func (out *Service) UnmarshalJSON(data []byte) error {
     }
     
     if plainOk {
-      out.Usercertificate = &[]string{plainV}
+      out.Usercertificate = &[][]byte{plainV}
     } else if sliceOk {
       
       out.Usercertificate = &sliceV
@@ -97633,7 +97778,7 @@ Preferred Language
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Password
@@ -99365,15 +99510,39 @@ func (out *Stageuser) UnmarshalJSON(data []byte) error {
   if in.Usercertificate != nil {
     raw := in.Usercertificate
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -99386,7 +99555,7 @@ func (out *Stageuser) UnmarshalJSON(data []byte) error {
     }
     
     if plainOk {
-      out.Usercertificate = &[]string{plainV}
+      out.Usercertificate = &[][]byte{plainV}
     } else if sliceOk {
       
       out.Usercertificate = &sliceV
@@ -103772,7 +103941,7 @@ Preferred Language
 Certificate
 Base-64 encoded user certificate
     */
-    Usercertificate *[]string `json:"usercertificate,omitempty"`
+    Usercertificate *[][]byte `json:"usercertificate,omitempty"`
   
     /*
 Account disabled
@@ -105522,15 +105691,39 @@ func (out *User) UnmarshalJSON(data []byte) error {
   if in.Usercertificate != nil {
     raw := in.Usercertificate
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -105543,7 +105736,7 @@ func (out *User) UnmarshalJSON(data []byte) error {
     }
     
     if plainOk {
-      out.Usercertificate = &[]string{plainV}
+      out.Usercertificate = &[][]byte{plainV}
     } else if sliceOk {
       
       out.Usercertificate = &sliceV
@@ -106522,13 +106715,13 @@ Vault type
 Salt
 Vault salt
     */
-    Ipavaultsalt *string `json:"ipavaultsalt,omitempty"`
+    Ipavaultsalt *[]byte `json:"ipavaultsalt,omitempty"`
   
     /*
 Public key
 Vault public key
     */
-    Ipavaultpublickey *string `json:"ipavaultpublickey,omitempty"`
+    Ipavaultpublickey *[]byte `json:"ipavaultpublickey,omitempty"`
   
     /*
 Owner users
@@ -106760,15 +106953,39 @@ func (out *Vault) UnmarshalJSON(data []byte) error {
   if in.Ipavaultsalt != nil {
     raw := in.Ipavaultsalt
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -106799,15 +107016,39 @@ func (out *Vault) UnmarshalJSON(data []byte) error {
   if in.Ipavaultpublickey != nil {
     raw := in.Ipavaultpublickey
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
@@ -107242,7 +107483,7 @@ type Vaultconfig struct {
 Transport Certificate
 
     */
-    TransportCert string `json:"transport_cert,omitempty"`
+    TransportCert []byte `json:"transport_cert,omitempty"`
   
     /*
 IPA KRA servers
@@ -107278,15 +107519,39 @@ func (out *Vaultconfig) UnmarshalJSON(data []byte) error {
   if true {
     raw := in.TransportCert
     
-    plainV, plainOk := raw.(string)
+    plainOk := false
+    var plainV []byte
+    switch tempV := raw.(type) {
+      case string:
+        plainV, _ = base64.StdEncoding.DecodeString(tempV)
+      case map[string]interface{}:
+        var tplainV string
+        tplainV, plainOk = tempV["__base64__"].(string)
+        plainV, _ = base64.StdEncoding.DecodeString(tplainV)
+      default:
+        break
+    }
     
     sliceWrapperV, sliceWrapperOk := raw.([]interface{})
-    var sliceV []string
+    var sliceV [][]byte
     sliceOk := sliceWrapperOk
     if sliceWrapperOk {
       for _, rawItem := range sliceWrapperV {
         
-        itemV, itemOk := rawItem.(string)
+        var itemV []byte
+        itemOk := false
+        // Handle multiple implementations of the type
+        switch tempItemV := rawItem.(type) {
+          case string:
+            itemV, _ = base64.StdEncoding.DecodeString(tempItemV)
+            itemOk = true
+          case map[string]interface{}:
+            var titemV string
+            titemV, itemOk = tempItemV["__base64__"].(string)
+            itemV, _ = base64.StdEncoding.DecodeString(titemV)
+          default:
+            break
+        }
         
         if !itemOk {
           sliceOk = false
